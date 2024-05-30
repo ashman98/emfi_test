@@ -6,6 +6,7 @@ use services\actions\SaveLeads;
 use services\AmoCrmAuthTrite;
 use services\getFromAmoCrm\GetContactInfoService;
 use services\getFromAmoCrm\GetEventsService;
+use services\getFromAmoCrm\GetFieldsGroupsService;
 use services\getFromAmoCrm\GetLeadsInfoService;
 use services\getFromAmoCrm\GetUsersInfoService;
 
@@ -109,8 +110,14 @@ class HandleWebhook
                         foreach ($events['_embedded']['events'][0]['value_after'] as $key => $evernt) {
                             print_r($evernt);
                             foreach ($evernt as $l){
-                                foreach ($l as $k => $v){
-                                        $changes .= $k."=>".$v." ";
+                                if($actionData['action_type'] === 'add' && $actionData['entity_type'] === 'contact'){
+                                    foreach ($l as $k => $v){
+                                            $changes .= $k."=>".$v." ";
+                                        }
+                                }else{
+                                    $getFieldsGroupsService = new GetFieldsGroupsService();
+                                    $filedData = $getFieldsGroupsService->setFieldID((int)$l['field_id'])->getField();
+                                    $changes .= json_encode($filedData);
                                 }
                             }
 
