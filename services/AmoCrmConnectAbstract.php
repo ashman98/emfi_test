@@ -4,8 +4,8 @@ namespace services;
 class AmoCrmConnectAbstract
 {
     private $clientId = 'edefe1b3-baf7-42af-899c-50621eb275b0';
-    private $clientSecret = 'x5bALOGtncV0JrBqDhFd8QUrKLYMkawhXsfN13eYcWpMWmrySCk5VbnZbEfXm8lM';
-    private $code = 'def5020047fd6dd2a55aa5452636ac605013044b97a64620fb0e0f0cfd9a4eb174892ea24cd2958a77899b215bb0dbb247f706ae48e136b326f5972054211a28c082a2f69b1c37eb5c2a3bc07239b2fbebe1313ad0043531bc7b9f9dad849935cc73bd6b02b7c6ff2587330744e3ba952bdf3dd57568900b05f52c1ebcb885fc664171a9cc8f0a78dc4fd4b57274b841f4ba331cfb4b872c17c7042919c8d4b3c0c362e21485df422cae7484a0e87dab740c24dcd0d3e054138f53697ffeb55891bc2f12affc59f5d216e5334627957bf811e65cbbd34e91de392c8254a7115fa3ee19ec1d14de8893ae0f0ca02a2ec9d1792b40bf8f5b8a2e586c908768388f0b3c2f9552d296ab7c338bead9cd09e99597128336288e7723e32f41a6c219782cfee8421b495948d366afa52e6ed73ac0c35d621c186a997b587d5ecefbe46d775e6e3d65bc224bd15483c050e30b92927def365e375589c6c9ff681a4412b331df6b86ba13353b6a83980058b44367842908d7a1f74f66a23557535b38c4ea51da2d5baadcec37782d7ba5177044a895569275bb0faf729ae7d2b71f4686976561b9cd0a7b10d626778bc27922685a92eb1f14fd87584af5c699331ba9bcc8ddb20f0be1e3ac1fc7bf77e06da6e72b95246d796ab3032ea5990cdde6bbfd10910e09231f2fce0fa22c20';
+    private $clientSecret = 'AEpkwrigQBw84OMe6BYmbQFKl5mcQd4LyL5f5EjW0Fsyd2ClOe5tqcL16CBJrw0U';
+    private $code = 'def50200531a4b5d30cab83848e17dcc612f261163e36d5b4063d463c7f00886b075dec9e378152455f9eb114baa11a01e406f162dba867efa2e27d2d2461450c326ce4e63d70df5a29ef848a64860bed077b416a4ecbafc911bc6c80047438c9943647a63093938554a7c099c56be6491ba9333cf15b88bf8e6b24fc4aceeebfb674f6076e83fd27ad9766a2e9342b225a97481ae4aef10d3b5d8ffd33d5564caa5c078c2766b8356b7379c18bf21efedec83e25a14870f4c33825d2517570566ffb24cca8cc4db0a281ada2dcbc7ea92324689efac032bfe73712ccd682d89cfcdc8f356577434a042dd5e8d5ab42805596b1b1b46b05d7fbe35116dc2410cc5a86a0f39b0bf229fc939488364c5d3b3e3194750ecd7d6d15991086e818ce8bc301ed4c7efcfabc5c00936289b4f3608835e99741c5719cbcdad2626683627d74fc277eb2f14c50e3d396e58c212392983329e3cd5583ec1ebf00405e1072ad0fc90097f78880a1d014d350d2780ac97b9bdc981edcaac7172be47d286b60c4db15d470848dfef6124692de00b21de475d26cda5400b98481dc4b7f32bbeeaf632d9bad30551801c519185a31bddd7c0dba875a613625433f452ec920c3d5eeaccf99b32fcfcebaade08e1b3660e6f200e0dc771aff084187b5350cab784a8763abc7ef61f6b0beac03d';
 
     private $redirectUri = 'https://pbl.up.railway.app';
     private $refreshToken = '';
@@ -15,6 +15,9 @@ class AmoCrmConnectAbstract
 
     public function __construct()
     {
+        session_start();
+        $this->refreshToken = $this->loadRefreshToken();
+
         if (empty($this->refreshToken)) {
             $this->authorize();
         } else {
@@ -35,7 +38,6 @@ class AmoCrmConnectAbstract
         ];
 
         $response = $this->makeCurlRequest($link, $data);
-        print_r(json_encode($response));
 
         $this->handleResponse($response);
     }
@@ -100,10 +102,21 @@ class AmoCrmConnectAbstract
         if (isset($response['access_token'])) {
             $this->accessToken = $response['access_token'];
             $this->refreshToken = $response['refresh_token'];
+            $this->saveRefreshToken($this->refreshToken);
             echo 'Authorization success';
         } else {
             echo('Ошибка: Invalid response from authorization server');
             die();
         }
+    }
+
+    private function saveRefreshToken($token)
+    {
+        $_SESSION['refresh_token'] = $token;
+    }
+
+    private function loadRefreshToken()
+    {
+        return $_SESSION['refresh_token'] ?? '';
     }
 }
