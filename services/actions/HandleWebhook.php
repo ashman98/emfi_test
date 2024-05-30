@@ -12,6 +12,11 @@ class HandleWebhook
 {
     use AmoCrmAuthTrite;
 
+    private $lang = [
+        'name' => 'Название',
+        'sale' => 'Бюджет'
+    ];
+
     private $hookData = [];
 
     public function setHookData(array $hookData): HandleWebhook
@@ -115,7 +120,7 @@ class HandleWebhook
 //                                print_r($l);
                                 foreach ($l as $k => $v){
 //                                    if ($v === 'name'){
-                                        $changes .= $k."=>".$v." ";
+                                        $changes .= $this->lang[$k]."=>".$v." ";
 //                                    }
 //                                    $newValue = $event['value_after'][0]['name_field_value']['name'];
                                 }
