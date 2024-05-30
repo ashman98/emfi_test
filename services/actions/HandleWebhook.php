@@ -66,7 +66,7 @@ class HandleWebhook
                                 'entity_responsible_changed'
                             ]
                         ])->getEvents();
-                    print_r($events);
+//                    print_r($events);
 
                     $getUsers = new GetUsersInfoService();
                     $responsibleUser = $getUsers->setUserID((int)$leadsInfo['responsible_user_id'])->getUserInfo();
@@ -104,15 +104,18 @@ class HandleWebhook
                     . "\nВремя добавления карточки: " . date('Y-m-d H:i:s', $leadsInfo['created_at']);
             } else{
                     $changes = '';
+//                print_r($events['_embedded']['events']);
                     if (isset($events['_embedded']['events'][0])){
 //                        print_r($events['_embedded']['events']);
-                        foreach ($events['_embedded']['events'][0]['value_after'] as $key => $event) {
-//                            print_r($event);
-                            foreach ($event as $l){
-                                foreach ($l as $k =>  $v){
-                                    if ($v === 'name'){
-                                        $changes .= $k.": ".$v." ";
-                                    }
+//                        print_r($events['_embedded']['events'][0]);
+                        foreach ($events['_embedded']['events'][0]['value_after'] as $key => $evernt) {
+//                            print_r($evernt);
+                            foreach ($evernt as $l){
+                                print_r($l);
+                                foreach ($l as $k => $v){
+//                                    if ($v === 'name'){
+                                        $changes .= $k."=>".$v." ";
+//                                    }
 //                                    $newValue = $event['value_after'][0]['name_field_value']['name'];
                                 }
                             }
