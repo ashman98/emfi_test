@@ -9,8 +9,7 @@ class AmoCrmConnectAbstract
 {
     private $clientId = 'edefe1b3-baf7-42af-899c-50621eb275b0';
     private $clientSecret = 'XY5vPveMNOdA6nurraTt8xbIFUoHLTRDUVkq1X9yenktOnPYgZlYMs9rFiXMY2QW';
-    private $code = 'def502005bdad70b7bca26d0783152d6baf022cf660711ebc5e5b8294c25407188306c79f2093d541d5bbb615296ef22229f96004b30fddfd9d4f4174865238b022333d76ea147a2baef093cdd86a7ed8de2238fa6617e61d0f0d64b56b4d16eb9f846166ec7a99844d13a8ee6ddc01c1c4ec3f40e0bff76295bcca7db9728bc4deba72238622b44a2f309800d0298afa67dbea2cfd6af96322c43b7bf992263b1201b4d4f37af2b5fb309a224ffe2cea9f02d495ec3a6c620aef1b0d60907bb0c011de04a07596e5cf7a96988086c47845d377c99c3be00a48288195862bab90e16e98506d382176deedfca76f91217cdc1200a8216df747dcc2a3a3f92fe94bdf735518f105f25803a50c9c92fdc2bf90dc53b88d3e2b9e35a9251194bab228adc849c2812349a71bba1655a54356e7ad83ac107e883fd4fbea1d33ef7274ed508c6f9fd0ec4f78e1436d30e86dd6f280e69c15272cfd521a7fa1bb97e1a66e32589d14cfbe7e91869f938dc396d1bfb5d349e7aa17e651e1598d72299443eca72da261cba0a97bebc3a9a600fa3612335dfaf8045b9a716cffc6ae099fb3cae133552ac2566a8c79feea30f1afc281f9ec84ad56eb7e26eba20942071dfc4e7483b3840f3d0563b58590529bdefb57c307444c925f839885d6afe4d458ab25e8a455c9dad3f83ba6550';
-
+    private $code = 'def5020083d13e73a2aff5d7a2a71c7564a8f0eb41db8ceab281943ffbb732319d9e377c0d207b3efae4632d17b9056daf3d611c2e97eb0ca8331c7501d69347b81d1a3003882e25444b02a439c3537cc581bea2c57e1c1cbd78b723de3afc173749caaaf0297b2d43f1f273160bb92a3dd2ae776e5e1008e14926874cf8012d34952e62fd2ac0bdc41fe59a87a4f44ccec660b66ddaf8f95be3ce35ef187570e466ee59eaa4832ed038ad660dbf7203dcb6c0accf353d1d5123c6c620d5cc54b445c2b8a2b55103511554274b84a2beee637939552d993f74be39224be5011f483f04a3352aa871c802121e693a5280e994724aa636b50ace8079faa71249bc02f6ddb257bac0d95c1a7df505cfa2ccc1262873eaaf82b6c2adc3ac75e8cc2e8cbd33a41c353829857de7a21c6f0391675ce96c615ff240f6c00083b46e69f6cf5534881d7ff7fef58f6c1e7e3d2a4b7e8889643d83f8220339a75916935a04841c6058dd2aa3507f0468e31de8b029f8a033b9932363112d2639630db7273d2fc473a48249f563d5d89257f79b6310226a854ce97c575c2559cd9acc5ac7a6344fe0e4b9ab69aa092f4eea44a08ed489b21a2d2c439ae7eff585fc1066e0c3b2ab8f722ba74c3f3e90c2e3ad1104d5e304c0f565eb8cc88dbb7b9bebc12a2335a23ac898c974855307b7';
     private $redirectUri = 'https://pbl.up.railway.app';
     private $refreshToken = '';
 
@@ -119,6 +118,16 @@ class AmoCrmConnectAbstract
         $conn = $db->conn();
         $conn->beginTransaction();
         try {
+            $selectToken = $conn->prepare("SELECT * FROM tokens ORDER BY id DESC" );
+            $selectToken->execute();
+            $tokenAssoc = $selectToken->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($tokenAssoc as $val){
+                $sql = "DELETE FROM tokens WHERE id=?";
+                $stmt= $conn->prepare($sql);
+                $stmt->execute([$val['id']]);
+            }
+
             $insertToken = $conn->prepare("INSERT INTO tokens (token) VALUES (:token)");
             $insertToken->execute([':token' => $token]);
             echo "New token created successfully";
