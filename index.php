@@ -7,9 +7,9 @@ use services\db\DBconnect;
 
 $formData = getFormData();
 
+
 function getFormData() {
-    $log = json_encode($_SERVER['REQUEST_METHOD']);
-    file_put_contents(__DIR__.'/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
+    $fimid = $_SERVER['REQUEST_METHOD'];
 
     $rawPostData = file_get_contents('php://input');
     $formData = [];
@@ -24,31 +24,33 @@ function getFormData() {
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-        $log = json_encode($formData);
-        file_put_contents(__DIR__.'/var/logs/jesic.json', $log . PHP_EOL, FILE_APPEND);
+//        $log = json_encode($formData);
+//        file_put_contents(__DIR__.'/var/logs/jesic.json', $log . PHP_EOL, FILE_APPEND);
 
         $handleWebhook = new HandleWebhook();
         $formD = $handleWebhook->setHookData($formData)->handle();
 
-//        $sql = '';
-//        try {
-//            if(!empty($formD)){
-//                $db = new DBconnect;
-//                $conn = $db->conn();
-//
-//                $sql = "INSERT INTO ass (name)
-//                    VALUES ('".json_encode($formD)."')";
-//                // use exec() because no results are returned
-//                $conn->exec($sql);
-//                echo "New record created successfully";
-//            }
-//        } catch(PDOException $e) {
-//            echo $sql . "<br>" . $e->getMessage();
-//        }
+
+}
+
+if (!empty($fimid)){
+    $sql = '';
+    try {
+            $db = new DBconnect;
+            $conn = $db->conn();
+
+            $sql = "INSERT INTO ass (name)
+                VALUES ('".json_encode($fimid)."')";
+            $conn->exec($sql);
+            echo "New record created successfully";
+    } catch(PDOException $e) {
+        echo $sql . "<br>" . $e->getMessage();
+    }
 }
 
 
-$d = new CreateDbTables();
+
+//$d = new CreateDbTables();
 //$d->create();
 
 echo "</br> Json </br>";

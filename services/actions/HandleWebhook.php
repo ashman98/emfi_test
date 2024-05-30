@@ -23,8 +23,8 @@ class HandleWebhook
     {
         if (isset($this->hookData['contacts']) || isset($this->hookData['leads'])) {
 
-            $log = date('Y-m-d H:i:s').' start';
-            file_put_contents(dirname(dirname(__DIR__)) . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
+//            $log = date('Y-m-d H:i:s').' start';
+//            file_put_contents(dirname(dirname(__DIR__)) . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
 
             $actionData = [
                 'action_type' => 'add',
@@ -72,12 +72,12 @@ class HandleWebhook
 //                }
 //            }
 
-            $log = ' erorr' . json_encode($actionData);
-            file_put_contents(dirname(dirname(__DIR__)) . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
+//            $log = ' erorr' . json_encode($actionData);
+//            file_put_contents(dirname(dirname(__DIR__)) . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
 
             if (empty($actionData['rend_data'])) {
-                $log = date('Y-m-d H:i:s').' error _ rend_data empty';
-                file_put_contents(dirname(dirname(__DIR__)) . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
+//                $log = date('Y-m-d H:i:s').' error _ rend_data empty';
+//                file_put_contents(dirname(dirname(__DIR__)) . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
                 return [];
             }
 
