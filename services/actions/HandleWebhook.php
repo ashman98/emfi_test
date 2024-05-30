@@ -36,11 +36,11 @@ class HandleWebhook
 
 //            $log = json_encode($this->hookData);
 //            file_put_contents(__DIR__ . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
+            return $this->hookData;
             if (isset($this->hookData['leads'])){
                 $actionData['entity_type'] = 'leads';
                 $note_text .= 'Название сделки';
 
-                return $this->hookData;
                 if (isset($this->hookData['leads']['add'])){
                     $actionData['entity_id'] = $this->hookData['leads']['add'][0]['id'];
                     $actionData['action_type'] = 'add';
@@ -71,12 +71,7 @@ class HandleWebhook
 //                }
 //            }
 
-//            $log = ' erorr' . json_encode($actionData);
-//            file_put_contents(dirname(dirname(__DIR__)) . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
-
             if (empty($actionData['rend_data'])) {
-//                $log = date('Y-m-d H:i:s').' error _ rend_data empty';
-//                file_put_contents(dirname(dirname(__DIR__)) . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
                 return ['error' => 'rend_date'];
             }
 
