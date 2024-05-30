@@ -11,15 +11,15 @@ class AmoCrmConnectAbstract
     private $refreshToken = '';
 
     protected $subdomain = 'emfitestmailru';
-    protected $accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6Ijc5OTBkMjM0ZGY0MWNlNDU2ZjQzODkyZWIxNTA2MzI3NTVhYTZlODgzMTdmOGE4NzRlZDJhYjZiYzA1ZGRlM2M1MDUzYjBlZmFkODU3OWNhIn0.eyJhdWQiOiJlZGVmZTFiMy1iYWY3LTQyYWYtODk5Yy01MDYyMWViMjc1YjAiLCJqdGkiOiI3OTkwZDIzNGRmNDFjZTQ1NmY0Mzg5MmViMTUwNjMyNzU1YWE2ZTg4MzE3ZjhhODc0ZWQyYWI2YmMwNWRkZTNjNTA1M2IwZWZhZDg1NzljYSIsImlhdCI6MTcxNzA4NDIzMCwibmJmIjoxNzE3MDg0MjMwLCJleHAiOjE3MTkwMTQ0MDAsInN1YiI6IjExMDg3MzUwIiwiZ3JhbnRfdHlwZSI6IiIsImFjY291bnRfaWQiOjMxNzY4NDI2LCJiYXNlX2RvbWFpbiI6ImFtb2NybS5ydSIsInZlcnNpb24iOjIsInNjb3BlcyI6WyJjcm0iLCJmaWxlcyIsImZpbGVzX2RlbGV0ZSIsIm5vdGlmaWNhdGlvbnMiLCJwdXNoX25vdGlmaWNhdGlvbnMiXSwiaGFzaF91dWlkIjoiYjU2ZDE1Y2QtMTliOC00NmU5LTllM2ItMzk2NTliNmMyOTBlIn0.OOhQIA-RybxKz5mhZkzhGiFqxNAohCNMcGXyKHz8YPu17-jLmuputh2EolZXFwp0Jf0-czNexzD2Vw8TMKLKxO_d6bnPXTN5MtO3qa5HMQM39_tt4J2LzqDMH_7wZ5_JXxUDO644cCtggxGqz17n1CVHTvLI3_yOQarKKkHkXzMLV1a82YiDA8xw-zyDco1_Z667RfzYmk9YZfAkS-hqILz_oCMaApVByjRUgY7050HKDbg9eYfV6Rd7WyHhT5dG-2ESCQ_KISzkFPfXndMJFvePlWzjJ4i3yXSeGQL3OPk-7-hwm_S1KNZdeZ3eCaA0W21lkgXXYuZlqfwknPFkKw';
+    protected $accessToken = '';
 
     public function __construct()
     {
-//        if (empty($this->refreshToken)) {
-//            $this->authorize();
-//        } else {
-//            $this->refreshToken();
-//        }
+        if (empty($this->refreshToken)) {
+            $this->authorize();
+        } else {
+            $this->refreshToken();
+        }
     }
 
     private function authorize()
@@ -37,7 +37,7 @@ class AmoCrmConnectAbstract
         $response = $this->makeCurlRequest($link, $data);
         print_r(json_encode($response));
 
-//        $this->handleResponse($response);
+        $this->handleResponse($response);
     }
 
     private function refreshToken()
