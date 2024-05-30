@@ -4,6 +4,7 @@ namespace services\actions;
 use services\actions\AddNoteToCard;
 use services\actions\SaveLeads;
 use services\AmoCrmAuthTrite;
+use services\getFromAmoCrm\GetEventsService;
 use services\getFromAmoCrm\GetLeadsInfoService;
 use services\getFromAmoCrm\GetUsersInfoService;
 
@@ -22,49 +23,53 @@ class HandleWebhook
     public function handle()
     {
         if (isset($this->hookData['contacts']) || isset($this->hookData['leads'])) {
-
-//            $log = date('Y-m-d H:i:s').' start';
-//            file_put_contents(dirname(dirname(__DIR__)) . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
-
             $actionData = [
                 'action_type' => 'add',
                 'entity_id' => 0,
                 'entity_type' => '',
-                'rend_data' => []
+                'rend_data' => [],
+                'create_time' => '' ,
             ];
             $note_text = '';
 
-//            $log = json_encode($this->hookData);
-//            file_put_contents(__DIR__ . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
             if (isset($this->hookData['leads'])){
-                $actionData['entity_type'] = 'leads';
+                $actionData['entity_type'] = 'lead';
                 $note_text .= 'Название сделки';
-//                return $this->hookData;
 
-                if (array_key_exists('add',$this->hookData['leads'])){
-                    $actionData['entity_id'] = (int)$this->hookData['leads']['add'][0]['id'];
-                    $actionData['action_type'] = 'add';
-                }else{
-                    $actionData['entity_id'] = (int)$this->hookData['leads']['update'][0]['id'];
+
+//                if (array_key_exists('add',$this->hookData['leads'])){
+//                    $actionData['entity_id'] = (int)$this->hookData['leads']['add'][0]['id'];
+//                    $actionData['create_time'] = $this->hookData['leads']['add'][0]['created_at'];
+//                    $actionData['action_type'] = 'add';
+//                }else{
+//                    $actionData['entity_id'] = (int)$this->hookData['leads']['update'][0]['id'];
                     $actionData['action_type'] = 'update';
-                }
-//
-//                $actionData['entity_id'] = 293515;
+//                }
+
+                $actionData['entity_id'] = 293515;
 
 
-                if (!empty($actionData['entity_id'])){
+                $events = [];
+//                if (!empty($actionData['entity_id'])){
                     $getLeadsInfoService = new GetLeadsInfoService();
                     $leadsInfo = $getLeadsInfoService->setLeadsID((int)$actionData['entity_id'])->getLeadsInfo();
 
-                    if (!empty($leadsInfo)){
-                        $saveLeads = new SaveLeads();
-                        $saveLeads->setData($leadsInfo)->addLeads();
-                        $actionData['rend_data'] = $saveLeads->getRendData();
-                    }
-                }
+                    $get = new GetEventsService();
+                    $events = $get->setFilterParams([
+                        'filter[entity]' =>  $actionData['entity_type'],
+                        'filter[entity_id][]' => $actionData['entity_id'],
+                        'filter[created_at][from]' => $leadsInfo['updated_at']
+                    ])->getEvents();
+
+//                    if (!empty($leadsInfo)){
+//                        $saveLeads = new SaveLeads();
+//                        $saveLeads->setData($leadsInfo)->addLeads();
+//                        $actionData['rend_data'] = $saveLeads->getRendData();
+//                    }
+//                }
             }
 //            elseif (isset($this->hookData['contacts'])){
-//                $actionData['entity_type'] = 'contacts';
+//                $actionData['entity_type'] = 'contact';
 //                $note_text .= 'Название контакта';
 //
 //                if (isset($this->hookData['contacts']['add'])){
@@ -76,36 +81,36 @@ class HandleWebhook
 //                }
 //            }
 
-            if (empty($actionData['rend_data'])) {
-                return ['error' => 'rend_date'];
-            }
-
-            print_r($actionData['rend_data']);
-
+//            if (empty($actionData['rend_data'])) {
+//                print_r('error')
+//                return ['error' => 'rend_date'];
+//            }
 
             if ($actionData['action_type'] === 'add') {
-                $note_text .= ": " . $actionData['rend_data']['name']['val']
-                    . "\n".$actionData['rend_data']['responsible_user_name']['rus'].": " . $actionData['rend_data']['responsible_user_name']['val']
-                    . "\n".$actionData['rend_data']['created_at']['rus'].": " . date('Y-m-d H:i:s', $actionData['rend_data']['created_at']['val']);
-            }
-            else{
+                $note_text .= ": " . $leadsInfo['name']
+                    . "\nОтветственный: " . $actionData['rend_data']['responsible_user_name']['val']
+                    . "\nВремя добавления карточки: " . date('Y-m-d H:i:s', $leadsInfo['created_at']);
+            } else{
                     $changes = '';
-                    foreach ($actionData['rend_data'] as $field => $newValue) {
-                        if(boolval($newValue['is_changed'])){
-                            $changes .= $newValue['rus'].": ".$newValue['val']."\n";
+                    if (!isset($events['_embedded']['events'] )){
+                        foreach ($events['_embedded']['events'] as $key => $event) {
+                            if (isset($events['_embedded']['events'])){
+                                $field = $event['type'];
+                                $newValue = $event['value_after'][0]['name_field_value']['name'];
+
+                                $changes .= $field.": ".$newValue."\n";
+                            }
                         }
                     }
                 $note_text .= ": "
-                    . $actionData['rend_data']['name']
+                    . $leadsInfo['name']
                     . "\nИзмененные поля:\n" . $changes
-                    . "\n".$actionData['rend_data']['update_at']['rus'].": " . date('Y-m-d H:i:s', $actionData['rend_data']['update_at']);
+                    . "\nВремя изменения карточки: " . date('Y-m-d H:i:s', $leadsInfo['updated_at']);
             }
 
 
             $addNoteToCard = new AddNoteToCard;
-            $addNoteToCard->setAccessToken($this->accessToken);
-            $addNoteToCard->setSubdomain($this->subdomain);
-            return $addNoteToCard
+            $addNoteToCard
                 ->setEntityType($actionData['entity_type'])
                 ->setEntityID($actionData['entity_id'])
                 ->setNoteText($note_text)
