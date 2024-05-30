@@ -37,16 +37,16 @@ class HandleWebhook
                 $note_text .= 'Название сделки';
 
 
-//                if (array_key_exists('add',$this->hookData['leads'])){
-//                    $actionData['entity_id'] = (int)$this->hookData['leads']['add'][0]['id'];
+                if (isset($this->hookData['leads']['add'])){
+                    $actionData['entity_id'] = (int)$this->hookData['leads']['add'][0]['id'];
 //                    $actionData['create_time'] = $this->hookData['leads']['add'][0]['created_at'];
-//                    $actionData['action_type'] = 'add';
-//                }else{
-//                    $actionData['entity_id'] = (int)$this->hookData['leads']['update'][0]['id'];
+                    $actionData['action_type'] = 'add';
+                }else{
+                    $actionData['entity_id'] = (int)$this->hookData['leads']['update'][0]['id'];
                     $actionData['action_type'] = 'update';
-//                }
+                }
 
-                $actionData['entity_id'] = 293515;
+//                $actionData['entity_id'] = 293515;
 
 
                 $events = [];
