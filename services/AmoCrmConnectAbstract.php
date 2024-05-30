@@ -9,8 +9,7 @@ class AmoCrmConnectAbstract
 {
     private $clientId = 'edefe1b3-baf7-42af-899c-50621eb275b0';
     private $clientSecret = '4EzbMwzAE0Fwg0RuRL0r2Bocfu72PCYeECmGd8sSFHvJq36gyx32y1j5ZVRxq7z7';
-    private $code = 'def502008152d2618feb41fb67b8db444f351a97ad73e0c7d236855a43885cae93800ff7437c8d0ea87ee651913e85276bc8815a1bd47741757fbe8e9f13e095d1aa62d612b92bc85749abf3a22f81fc6a1f8fbe1a93343ef6ffdc52e311b2eed52b116fe7fc53c4c2a8ff1aad0be8f3e68afc056bc0b76494df9a0e9016ac6e3a51146615c5f2dbacc12cbfb1554f87167516a3c88e8be3a0250d3612b7776b482e0f3e632934ddecc7186f778396cd0762b17f7fa853e3cde0fa11f3745887c195212eb065f05922d037be47f87981893290bf06df8ad941670d8c6f990dcebddf236d172c68d2c3f40e8a35684c7c4cb3591ef7377c1f4235dca5fd16c114d25f9ddc090dc0ecf31c137d030ecc4a074736f991d5bde474fdcce40914d3d168d38ce7a37d77d593611c60e7b7cbeca041f88b8c41715c2de01a2914b5e8c52d3d13a6093148a135edcb1d3138f3571ea4014b849b7c215242e3f856e6642dff916034ae7c971863135e3a3986aa42b16712dff0626c088187ce9f4a8aedb6f90ef303aeb47b2113a08d61f0dc1c1276af8089f36965bed348af8f3cc92dd74d33aeff6e29436284f21b6eaee3622e764799031fefe32d2e811e294bb446bd9d3cf502a02fca85d8f9645e299faaf9a80c07104e8562e1abac279f8eef981d84b38b47434d8f3d9c07a6';
-
+    private $code = 'def502007d4bff016ea7273343a00d2dc536a52455c21324f82933f765be56703aeb02eeb5e395b45bbbeeaab9a2e407dd00364423dfd453d6234382a0cb8e6caa0e9f0a0a45f18f9e5fb0f8cfd92a74d851625790dcc85f67168e2f7d062835fa8b436cac6bf05c19d662dacde6a8a4e18b7e892081d327377ff0554c6b460a1468fecaaaf2cedbf73569889733b476d4b81cc6188ac5d71b1cf6697240a4d6119a482bec8cd8ad00f74331a7191180241333fcb69b02dd48c6de72ea9788973d7bcdd7f859f694daaf9eb44f698d0682ff5bf67afa3776a07db28302e04b73a25fe37ff98f99977e80f0efa175ff85fd72debb410e5b9852ff34a8a69cbd3165edb11ad95bfba2b678e8d7db29215945666d33eedaa6986922837ba50e54577b13c9b46d1f4517d98be159a75b54ff763be887e5cb45eb28e874b25ab91dd0af8e171c24256317966f70130f64fad9d96af8154726121498829d818331f989819e8610756cc22899e9ca5a575e353fce0de58e4613231ea4154554195369067efe38feb00df1b1a9baef80cb604f24767f0bc9d86cb3e8ecea9a5f9b331614e0be8d14d249d526d18884ee25dae4d9e7a32d5092def244cdb03c362bc67349d3f4c8fe038321a9ae63ed1ba2b4e3d782f62bef90370037cb028b1e5d89f48b6daef8293cc67a15c71aa6';
     private $redirectUri = 'https://pbl.up.railway.app';
     private $refreshToken = '';
 
@@ -89,6 +88,12 @@ class AmoCrmConnectAbstract
             503 => 'Service unavailable',
         ];
 
+        if ($data['grant_type'] === 'refresh_token'){
+            if ($code < 200 || $code > 204) {
+                $this->authorize();
+            }
+        }
+
 //        try {
 //            if ($code < 200 || $code > 204) {
 //                throw new \Exception(isset($errors[$code]) ? $errors[$code] : 'Undefined error', $code);
@@ -117,8 +122,20 @@ class AmoCrmConnectAbstract
     {
         $db = new DBconnect;
         $conn = $db->conn();
+
         $conn->beginTransaction();
         try {
+            $selectToken = $conn->prepare("SELECT * FROM tokens ORDER BY id DESC" );
+            $selectToken->execute();
+            $tokenAssoc = $selectToken->fetchAll(PDO::FETCH_ASSOC);
+
+            if(!empty($tokenAssoc)){
+                foreach ($tokenAssoc as $val){
+                    $stmt= $conn->prepare("DELETE FROM users WHERE id=?");
+                    $stmt->execute([$val['id']]);
+                }
+            }
+
             $insertToken = $conn->prepare("INSERT INTO tokens (token) VALUES (:token)");
             $insertToken->execute([':token' => $token]);
             echo "New token created successfully";
