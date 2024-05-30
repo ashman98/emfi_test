@@ -17,16 +17,15 @@ class HandleWebhook
     private $lang = [
         'name' => 'Название',
         'sale' => 'Бюджет',
-        'PHONE_WORK' => '',
-        'PHONE_WORKDD' => '',
-        'PHONE_MOB' => '',
-        'PHONE_FAX' => '',
-        "PHONE_HOME" => '',
-        "PHONE_OTHER" => '',
-        'EMAIL_WORK' => '',
-        "EMAIL_PRIV" => '',
-        "EMAIL_OTHER" => '',
-
+        'PHONE_WORK' => 'Раб. телефон',
+        'PHONE_WORKDD' => 'Раб. прямой',
+        'PHONE_MOB' => 'Мобильный',
+        'PHONE_FAX' => 'Факс',
+        "PHONE_HOME" => 'Домашний',
+        "PHONE_OTHER" => 'Другой',
+        'EMAIL_WORK' => 'Email раб.',
+        "EMAIL_PRIV" => 'Email личн.',
+        "EMAIL_OTHER" => 'Email др.',
     ];
 
     private $hookData = [];
