@@ -9,8 +9,6 @@ $formData = getFormData();
 
 $fimid = $formData;
 function getFormData() {
-    return$_SERVER['REQUEST_METHOD'];
-
     $rawPostData = file_get_contents('php://input');
     $formData = [];
 
@@ -22,7 +20,7 @@ function getFormData() {
 }
 
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!empty($formData)) {
 
 //        $log = json_encode($formData);
 //        file_put_contents(__DIR__.'/var/logs/jesic.json', $log . PHP_EOL, FILE_APPEND);
