@@ -72,6 +72,9 @@ class HandleWebhook
                                 'entity_responsible_changed'
                             ]
                         ])->getEvents();
+                    if (empty($events)){
+                        die();
+                    }
 //                    print_r($leadsInfo);
 
                     $getUsers = new GetUsersInfoService();
