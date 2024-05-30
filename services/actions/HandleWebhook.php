@@ -4,6 +4,7 @@ namespace services\actions;
 use services\actions\AddNoteToCard;
 use services\actions\SaveLeads;
 use services\AmoCrmAuthTrite;
+use services\getFromAmoCrm\GetContactInfoService;
 use services\getFromAmoCrm\GetEventsService;
 use services\getFromAmoCrm\GetLeadsInfoService;
 use services\getFromAmoCrm\GetUsersInfoService;
@@ -34,52 +35,31 @@ class HandleWebhook
                 'entity_type' => '',
                 'rend_data' => [],
                 'create_time' => '' ,
+                'responsible_user_id' => 0
             ];
+
+            $type =[];
             $note_text = '';
-            $events = [];
             if (isset($this->hookData['leads'])){
                 $actionData['entity_type'] = 'lead';
                 $note_text .= 'Название сделки';
 
-//
                 if (isset($this->hookData['leads']['add'])){
                     $actionData['entity_id'] = (int)$this->hookData['leads']['add'][0]['id'];
-//                    $actionData['create_time'] = $this->hookData['leads']['add'][0]['created_at'];
                     $actionData['action_type'] = 'add';
+                    $actionData['create_time'] =  $this->hookData['leads']['add'][0]['created_at'];
+                    $type[] = 'lead_added';
                 }else{
                     $actionData['entity_id'] = (int)$this->hookData['leads']['update'][0]['id'];
                     $actionData['action_type'] = 'update';
+                    $actionData['create_time'] =  $this->hookData['leads']['add'][0]['updated_at'];
+                    $type[] = 'sale_field_changed';
                 }
-
+                $getLeadsInfoService = new GetLeadsInfoService();
+                $leadsInfo = $getLeadsInfoService->setLeadsID((int)$actionData['entity_id'])->getLeadsInfo();
+                $actionData['rend_data']['name'] = $leadsInfo['name'];
+                $actionData['responsible_user_id'] = $leadsInfo['responsible_user_id'];
 //                $actionData['entity_id'] = 293515;
-
-
-//                if (!empty($actionData['entity_id'])){
-                    $getLeadsInfoService = new GetLeadsInfoService();
-                    $leadsInfo = $getLeadsInfoService->setLeadsID((int)$actionData['entity_id'])->getLeadsInfo();
-
-                    $get = new GetEventsService();
-                    $events = $get->setFilterParams([
-                            'filter[entity]' =>  $actionData['entity_type'],
-                            'filter[entity_id][]' => $actionData['entity_id'],
-                            'filter[created_at][from]' => $leadsInfo['updated_at'],
-                            'filter[type]' => [
-                                'lead_added',
-                                'sale_field_changed',
-                                'contact_added',
-                                'name_field_changed',
-                                'custom_field_value_changed',
-                                'entity_responsible_changed'
-                            ]
-                        ])->getEvents();
-                    if (empty($events)){
-                        die();
-                    }
-//                    print_r($leadsInfo);
-
-                    $getUsers = new GetUsersInfoService();
-                    $responsibleUser = $getUsers->setUserID((int)$leadsInfo['responsible_user_id'])->getUserInfo();
-                     $leadsInfo['responsible_user_name'] =   $responsibleUser['name'];
 
 
 //                    if (!empty($leadsInfo)){
@@ -87,33 +67,53 @@ class HandleWebhook
 //                        $saveLeads->setData($leadsInfo)->addLeads();
 //                        $actionData['rend_data'] = $saveLeads->getRendData();
 //                    }
-//                }
             }
-//            elseif (isset($this->hookData['contacts'])){
-//                $actionData['entity_type'] = 'contact';
-//                $note_text .= 'Название контакта';
-//
-//                if (isset($this->hookData['contacts']['add'])){
-//                    $actionData = $this->hookData['contacts']['add'][0];
-//                    $action = 'add';
-//                }elseif (isset($this->hookData['contacts']['update'])){
-//                    $actionData = $this->hookData['contacts']['update'][0];
-//                    $action = 'update';
-//                }
-//            }
+            elseif (isset($this->hookData['contacts'])){
+                $actionData['entity_type'] = 'contact';
+                $note_text .= 'Название контакта';
 
-//            if (empty($actionData['rend_data'])) {
-//                print_r('error')
-//                return ['error' => 'rend_date'];
-//            }
+                if (isset($this->hookData['contacts']['add'])){
+                    $actionData['entity_id'] = (int)$this->hookData['contacts']['add'][0]['id'];
+                    $actionData['action_type'] = 'add';
+                    $actionData['create_time'] =  $this->hookData['contacts']['add'][0]['created_at'];
+                    $type[] = 'contact_added';
+                }else{
+                    $actionData['entity_id'] = (int)$this->hookData['contacts']['update'][0]['id'];
+                    $actionData['action_type'] = 'update';
+                    $actionData['create_time'] =  $this->hookData['contacts']['add'][0]['updated_at'];
+                    $type[] = 'custom_field_value_changed';
+                }
+                $getContactInfoService = new GetContactInfoService();
+                $contactInfo = $getContactInfoService->setContactID((int)$actionData['entity_id'])->getContactInfo();
+                $actionData['rend_data']['name'] = $contactInfo['name'];
+                $actionData['responsible_user_id'] = $contactInfo['responsible_user_id'];
+            }
+
+            $getUsers = new GetUsersInfoService();
+            $responsibleUser = $getUsers->setUserID((int)$actionData['responsible_user_id'])->getUserInfo();
+            $actionData['rend_data']['responsible_user_name'] = $responsibleUser['name'];
+
+            $get = new GetEventsService();
+            $events = $get->setFilterParams([
+                'filter[entity]' =>  $actionData['entity_type'],
+                'filter[entity_id][]' => $actionData['entity_id'],
+                'filter[created_at][from]' => $actionData['create_time'],
+                'filter[type]' => array_merge([
+                    'name_field_changed',
+                    'entity_responsible_changed'
+                ], $type)
+            ])->getEvents();
+            if (empty($events)){
+                return;
+            }
 
             if ($actionData['action_type'] === 'add') {
-                $note_text .= ": " . $leadsInfo['name']
-                    . "\nОтветственный: " . $leadsInfo['responsible_user_name']
-                    . "\nВремя добавления карточки: " . date('Y-m-d H:i:s', $leadsInfo['created_at']);
+                $note_text .= ": " . $actionData['rend_data']['name']
+                    . "\nОтветственный: " . $actionData['rend_data']['responsible_user_name']
+                    . "\nВремя добавления карточки: " . date('Y-m-d H:i:s', $actionData['created_time']);
             } else{
                     $changes = '';
-                print_r($events);
+//                print_r($events);
                     if (isset($events['_embedded']['events'][0])){
 //                        print_r($events['_embedded']['events']);
 //                        print_r($events['_embedded']['events'][0]);
@@ -132,9 +132,9 @@ class HandleWebhook
                         }
                     }
                 $note_text .= ": "
-                    . $leadsInfo['name']
+                    . $actionData['rend_data']['name']
                     . "\nИзмененные поля: " . $changes
-                    . "\nВремя изменения карточки: " . date('Y-m-d H:i:s', $leadsInfo['updated_at']);
+                    . "\nВремя изменения карточки: " . date('Y-m-d H:i:s', $actionData['created_time']);
             }
 
 
@@ -146,7 +146,7 @@ class HandleWebhook
                 ->addNoteToCard();
         }
 
-        return [];
+        return;
     }
 
 
