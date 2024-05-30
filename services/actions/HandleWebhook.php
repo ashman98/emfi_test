@@ -44,9 +44,11 @@ class HandleWebhook
                     $actionData['entity_id'] = (int)$this->hookData['leads']['add'][0]['id'];
                     $actionData['action_type'] = 'add';
                 }elseif (isset($this->hookData['leads']['update'])){
-                    $actionData['entity_id'] = (int)$this->hookData['leads']['update'][0]['id'];
+                    $actionData['entity_id'] = (int)293003;
                     $actionData['action_type'] = 'update';
                 }
+                return $actionData;
+
 
                 if (!empty($actionData['entity_id'])){
                     $getLeadsInfoService = new GetLeadsInfoService();
