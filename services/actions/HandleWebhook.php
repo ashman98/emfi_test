@@ -47,13 +47,13 @@ class HandleWebhook
                     $actionData['entity_id'] = (int)293003;
                     $actionData['action_type'] = 'update';
                 }
-                return $actionData;
+
 
 
                 if (!empty($actionData['entity_id'])){
                     $getLeadsInfoService = new GetLeadsInfoService();
                     $leadsInfo = $getLeadsInfoService->setLeadsID($actionData['entity_id'])->getLeadsInfo();
-
+                    return $leadsInfo;
                     if (!empty($leadsInfo)){
                         $saveLeads = new SaveLeads();
                         $saveLeads->setData($leadsInfo)->addLeads();
