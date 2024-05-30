@@ -40,6 +40,7 @@ class HandleWebhook
                 $actionData['entity_type'] = 'leads';
                 $note_text .= 'Название сделки';
 
+                return $this->hookData;
                 if (isset($this->hookData['leads']['add'])){
                     $actionData['entity_id'] = $this->hookData['leads']['add'][0]['id'];
                     $actionData['action_type'] = 'add';

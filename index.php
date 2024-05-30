@@ -7,7 +7,7 @@ use services\db\DBconnect;
 
 $formData = getFormData();
 
-$fimid = $formData;
+//$fimid = $formData;
 function getFormData() {
     $rawPostData = file_get_contents('php://input');
     $formData = [];
@@ -19,7 +19,7 @@ function getFormData() {
     return $formData;
 }
 
-
+$fimid=[];
     if (!empty($formData)) {
 
 //        $log = json_encode($formData);
