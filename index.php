@@ -45,8 +45,34 @@ function getFormData($method) {
 //        }
 }
 
+
 $d = new CreateDbTables();
 //$d->create();
+
+echo "</br> Json </br>";
+$file = __DIR__.'/var/logs/jesic.json';
+
+$handle = fopen($file, 'r');
+
+while (!feof($handle)) {
+    $line = fgets($handle);
+    echo $line . "<br>";
+}
+
+fclose($handle);
+
+echo "</br></br></br> Log </br>";
+
+$filed = __DIR__.'/var/logs/log.txt';
+
+$handled = fopen($filed, 'r');
+
+while (!feof($handled)) {
+    $line = fgets($handled);
+    echo $line . "<br>";
+}
+
+fclose($handled);
 
 
 
