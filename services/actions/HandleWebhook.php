@@ -54,11 +54,24 @@ class HandleWebhook
                     $leadsInfo = $getLeadsInfoService->setLeadsID((int)$actionData['entity_id'])->getLeadsInfo();
 
                     $get = new GetEventsService();
-                $events = $get->setFilterParams([
-                        'filter[entity]' =>  $actionData['entity_type'],
-                        'filter[entity_id][]' => $actionData['entity_id'],
-                        'filter[created_at][from]' => $leadsInfo['updated_at']
-                    ])->getEvents();
+                    $events = $get->setFilterParams([
+                            'filter[entity]' =>  $actionData['entity_type'],
+                            'filter[entity_id][]' => $actionData['entity_id'],
+                            'filter[created_at][from]' => $leadsInfo['updated_at'],
+                            'filter[type]' => [
+                                'lead_added',
+                                'company_added',
+                                'name_field_changed',
+                                'custom_field_value_changed',
+                                'entity_responsible_changed'
+                            ]
+                        ])->getEvents();
+                    print_r($events);
+
+                    $getUsers = new GetUsersInfoService();
+                    $responsibleUser = $getUsers->setUserID((int)$leadsInfo['responsible_user_id'])->getUserInfo();
+                     $leadsInfo['responsible_user_name'] =   $responsibleUser['name'];
+
 
 //                    if (!empty($leadsInfo)){
 //                        $saveLeads = new SaveLeads();
@@ -87,24 +100,28 @@ class HandleWebhook
 
             if ($actionData['action_type'] === 'add') {
                 $note_text .= ": " . $leadsInfo['name']
-                    . "\nОтветственный: " . $actionData['rend_data']['responsible_user_name']['val']
+                    . "\nОтветственный: " . $leadsInfo['responsible_user_name']
                     . "\nВремя добавления карточки: " . date('Y-m-d H:i:s', $leadsInfo['created_at']);
             } else{
                     $changes = '';
-                    if (isset($events['_embedded']['events'])){
-                        foreach ($events['_embedded']['events'] as $key => $event) {
-                            print_r($event);
-                            if (isset($event['value_after'][0]['name_field_value']['name'])){
-                                $field = $event['type'];
-                                $newValue = $event['value_after'][0]['name_field_value']['name'];
-
-                                $changes .= $field.": ".$newValue."\n";
+                    if (isset($events['_embedded']['events'][0])){
+//                        print_r($events['_embedded']['events']);
+                        foreach ($events['_embedded']['events'][0]['value_after'] as $key => $event) {
+//                            print_r($event);
+                            foreach ($event as $l){
+                                foreach ($l as $k =>  $v){
+                                    if ($v === 'name'){
+                                        $changes .= $k.": ".$v." ";
+                                    }
+//                                    $newValue = $event['value_after'][0]['name_field_value']['name'];
+                                }
                             }
+
                         }
                     }
                 $note_text .= ": "
                     . $leadsInfo['name']
-                    . "\nИзмененные поля:\n" . $changes
+                    . "\nИзмененные поля: " . $changes
                     . "\nВремя изменения карточки: " . date('Y-m-d H:i:s', $leadsInfo['updated_at']);
             }
 
@@ -113,8 +130,8 @@ class HandleWebhook
             $addNoteToCard
                 ->setEntityType($actionData['entity_type'])
                 ->setEntityID($actionData['entity_id'])
-                ->setNoteText($note_text);
-//                ->addNoteToCard();
+                ->setNoteText($note_text)
+                ->addNoteToCard();
         }
 
         return [];
