@@ -59,14 +59,6 @@ class HandleWebhook
                 $leadsInfo = $getLeadsInfoService->setLeadsID((int)$actionData['entity_id'])->getLeadsInfo();
                 $actionData['rend_data']['name'] = $leadsInfo['name'];
                 $actionData['responsible_user_id'] = $leadsInfo['responsible_user_id'];
-//                $actionData['entity_id'] = 293515;
-
-
-//                    if (!empty($leadsInfo)){
-//                        $saveLeads = new SaveLeads();
-//                        $saveLeads->setData($leadsInfo)->addLeads();
-//                        $actionData['rend_data'] = $saveLeads->getRendData();
-//                    }
             }
             elseif (isset($this->hookData['contacts'])){
                 $actionData['entity_type'] = 'contact';
@@ -113,19 +105,12 @@ class HandleWebhook
                     . "\nВремя добавления карточки: " . date('Y-m-d H:i:s', $actionData['created_time']);
             } else{
                     $changes = '';
-//                print_r($events);
                     if (isset($events['_embedded']['events'][0])){
-//                        print_r($events['_embedded']['events']);
-//                        print_r($events['_embedded']['events'][0]);
                         foreach ($events['_embedded']['events'][0]['value_after'] as $key => $evernt) {
                             print_r($evernt);
                             foreach ($evernt as $l){
-//                                print_r($l);
                                 foreach ($l as $k => $v){
-//                                    if ($v === 'name'){
-                                        $changes .= $this->lang[$k]."=>".$v." ";
-//                                    }
-//                                    $newValue = $event['value_after'][0]['name_field_value']['name'];
+                                        $changes .= $k."=>".$v." ";
                                 }
                             }
 
