@@ -4,10 +4,9 @@ namespace services;
 class AmoCrmConnectAbstract
 {
     private $clientId = 'edefe1b3-baf7-42af-899c-50621eb275b0';
-    private $clientSecret = 't32djzEe2yvpYbR4I9j4iMkM2aJri5KVKWS5cD40GnKgiB5Rj7TEcDj5wgRIdHc5';
-    private $code = 'def5020072cccd9868fe33869a9630b7067fc1fddc770ac5f8ce0b57de0f5cf941fa7d25ed135289871e0c36c2cc42b537a5ffa6f8e079a9c82e0b04dbb06e3cabda0c5816c246a04515753bc2e9812c9b6740ca146531cbb173fe22a8d012bbd263dbecd1f808e52cd78f074f75808baf847f54964c13e7692c6b15c172db4091866dda6d6549f3de871a6e0bbe88a89daff5a83ea7d836c03fdecc1ec802c8d3c0c57e7c58074fc680717d0e344f0d39b4cbefafec556b54a91f05e1f3b0808194353a8755bf181df7c1c0abe435853bb0c00960f56fefc772d77fbe5e2211932c1fe0a21257492f6e235b539ee0483c9a599bc6483ecf2c4d2d3363ab8d4132518e089ef8ce9fb3aa078e7dcdfa594c94f58d20428d05f11c0a0ad8de2740d3b4297c4be78d3584b8ea580edfe14c5e570fd356068790964f1bc572bf5a416822d5eac67c5b8b4ac997c6f7a99942e3e2cd6ee805efec1a5d5648909eae34b27aad31836c6a6977ad6d291c1d3098c85b50c55f4d0d0821ca2299ad3e9f372ef11f1a29251987707d53b7227ff5b1ee354039544f66c9b194dbdf7357841e6f838208604c2b69c9ffb8b4616ed9787e64ad8fe1d6f0278afc8015cee4d3d8276642a70236d8508a5ab6c7a4385e884b0f68d142c84630fe42de8348e210fbbc1a82eef332adb5d2334a';
-
-    private $redirectUri = 'https://pbl.up.railway.app';
+    private $clientSecret = 'RdciNNMN6RMV7LvnhJBtHwQVJu4LnW12IsfVdo3X2CgU4oTDvmUdPrh6rLjg7P8E';
+    private $code = 'def502000f217cebaaa53d46a976ec659151f8f9f8819c4282a509694c5e2b689b9004bf94ff8c087e0a108f14f06c4d4c3657ad3d01581551b59b4e598885427ec0d80a5c07ba4de16c456c01b29f8fa288427fa2c940c3e193b0585cd81626f9db659312f482cea3a7ed11cde0e5e2af453c9244e295eebdd774f9821bb6a9c4ba75b40761d2009f442630b631cc5cba660cfe9a753187d41175d62f95f7ae54343510e37896224ae40fbfacb839717e7f99f0fa19e37bc1c9ddb924d51e3dc32e07a047e428c2418c646bae690bec864d8d0c00c501abda28ab1e2f42115dcac2eda6434ecca62da11cf91707c8e2a0295d256b52b3bdfa7795c0377b81e54d94aafa79d704b2598df18a500a69e30ab5cc0d4b2a1aa499920df419cdc290fb67afccf04c496468a05a2e801024b9062a88d4256983465b34a2215c1bffcb2798fed57457c7ce8f73a22dbe86a863920153a7c20c74e70ee072783a2eec701f9a5a87f3ae680afa5140cb1aabc51f4e2be79aafcaac15e92477d6d868707a2480006363821168115a22b27051079eb22bcb1a84b75e91044cb164a9e5a84c34e69fb822e233ded95f3b704d3c4632c659014cb67f89455c1c526471343648ef493bff5671519761541e381a0a60933219369d56b680b19d311be9a5db2c58ee24332b215848f70525e4e243c4610ccc54bf87579d386551dcf4a210555a32';
+    private $redirectUri = 'https://see-through-weights.000webhostapp.com/';
     private $refreshToken = '';
 
     protected $subdomain = 'emfitestmailru';
@@ -102,7 +101,7 @@ class AmoCrmConnectAbstract
         if (isset($response['access_token'])) {
             $this->accessToken = $response['access_token'];
             $this->refreshToken = $response['refresh_token'];
-           $this->saveRefreshToken($this->refreshToken);
+            $this->saveRefreshToken($this->refreshToken);
             echo 'Authorization success';
         } else {
             echo('Ошибка: Invalid response from authorization server');

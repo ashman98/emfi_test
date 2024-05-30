@@ -105,8 +105,6 @@ class SaveContacts
 
         foreach ($this->data as $key => $value){
             if (isset($leads[$key]) && array_key_exists($key, $rendDataKeys) && $leads[$key] != $value){
-//                $log = date('Y-m-d H:i:s').' '.$leads[$key] . ' !== ' . $value;
-//                file_put_contents(dirname(dirname(__DIR__)) . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
 
                 if ($leads['responsible_user_id'] === $value['responsible_user_id'] && $key === 'responsible_user_id'){
                     $getUsers = new GetUsersInfoService();

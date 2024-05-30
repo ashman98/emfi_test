@@ -57,7 +57,6 @@ class AddNoteToCard extends AmoCrmConnectAbstract
         ];
 
        $curl = curl_init(); //Сохраняем дескриптор сеанса cURL
-       /** Устанавливаем необходимые опции для сеанса cURL  */
        curl_setopt($curl,CURLOPT_RETURNTRANSFER, true);
        curl_setopt($curl,CURLOPT_USERAGENT,'amoCRM-oAuth-client/1.0');
        curl_setopt($curl,CURLOPT_URL, $url);
@@ -72,7 +71,6 @@ class AddNoteToCard extends AmoCrmConnectAbstract
        $out = curl_exec($curl);
        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
        curl_close($curl);
-       /** Теперь мы можем обработать ответ, полученный от сервера. Это пример. Вы можете обработать данные своим способом. */
        $code = (int)$code;
        $errors = [
            400 => 'Bad request',
@@ -84,17 +82,14 @@ class AddNoteToCard extends AmoCrmConnectAbstract
            503 => 'Service unavailable',
        ];
 
-       print_r($out);
-
-//       try
-//       {
-//           /** Если код ответа не успешный - возвращаем сообщение об ошибке  */
-//           if ($code < 200 || $code > 204) {
-//               throw new Exception(isset($errors[$code]) ? $errors[$code] : 'Undefined error', $code);
-//           }
-//       } catch(\Exception $e)
-//       {
-//           die('Ошибка: ' . $e->getMessage() . PHP_EOL . 'Код ошибки: ' . $e->getCode());
-//       }
+       try
+       {
+           if ($code < 200 || $code > 204) {
+               echo ($errors[$code] ?? 'Undefined error'. $code);
+           }
+       } catch(\Exception $e)
+       {
+           die('Ошибка: ' . $e->getMessage() . PHP_EOL . 'Код ошибки: ' . $e->getCode());
+       }
     }
 }

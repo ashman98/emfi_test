@@ -43,7 +43,6 @@ class GetEventsService extends AmoCrmConnectAbstract
             curl_close($curl);
 
             $events = json_decode($response, true);
-//            print_r($events);
             return $events??[];
     }
 }
