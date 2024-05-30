@@ -31,12 +31,12 @@ class HandleWebhook
                 'create_time' => '' ,
             ];
             $note_text = '';
-
+            $events = [];
             if (isset($this->hookData['leads'])){
                 $actionData['entity_type'] = 'lead';
                 $note_text .= 'Название сделки';
 
-
+//
                 if (isset($this->hookData['leads']['add'])){
                     $actionData['entity_id'] = (int)$this->hookData['leads']['add'][0]['id'];
 //                    $actionData['create_time'] = $this->hookData['leads']['add'][0]['created_at'];
@@ -49,13 +49,12 @@ class HandleWebhook
 //                $actionData['entity_id'] = 293515;
 
 
-                $events = [];
 //                if (!empty($actionData['entity_id'])){
                     $getLeadsInfoService = new GetLeadsInfoService();
                     $leadsInfo = $getLeadsInfoService->setLeadsID((int)$actionData['entity_id'])->getLeadsInfo();
 
                     $get = new GetEventsService();
-                    $events = $get->setFilterParams([
+                $events = $get->setFilterParams([
                         'filter[entity]' =>  $actionData['entity_type'],
                         'filter[entity_id][]' => $actionData['entity_id'],
                         'filter[created_at][from]' => $leadsInfo['updated_at']
@@ -92,9 +91,10 @@ class HandleWebhook
                     . "\nВремя добавления карточки: " . date('Y-m-d H:i:s', $leadsInfo['created_at']);
             } else{
                     $changes = '';
-                    if (!isset($events['_embedded']['events'] )){
+                    if (isset($events['_embedded']['events'])){
                         foreach ($events['_embedded']['events'] as $key => $event) {
-                            if (isset($events['_embedded']['events'])){
+                            print_r($event);
+                            if (isset($event['value_after'][0]['name_field_value']['name'])){
                                 $field = $event['type'];
                                 $newValue = $event['value_after'][0]['name_field_value']['name'];
 
@@ -113,8 +113,8 @@ class HandleWebhook
             $addNoteToCard
                 ->setEntityType($actionData['entity_type'])
                 ->setEntityID($actionData['entity_id'])
-                ->setNoteText($note_text)
-                ->addNoteToCard();
+                ->setNoteText($note_text);
+//                ->addNoteToCard();
         }
 
         return [];
