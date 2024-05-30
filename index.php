@@ -7,9 +7,9 @@ use services\db\DBconnect;
 
 $formData = getFormData();
 
-
+$fimid = $formData;
 function getFormData() {
-    $fimid = $_SERVER['REQUEST_METHOD'];
+    return$_SERVER['REQUEST_METHOD'];
 
     $rawPostData = file_get_contents('php://input');
     $formData = [];
