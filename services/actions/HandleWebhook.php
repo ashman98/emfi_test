@@ -30,8 +30,6 @@ class HandleWebhook
                 'action_type' => 'add',
                 'entity_id' => 0,
                 'entity_type' => '',
-                'create_date' => '',
-                'update_date' => '',
                 'rend_data' => []
             ];
             $note_text = '';
@@ -78,7 +76,7 @@ class HandleWebhook
             if (empty($actionData['rend_data'])) {
 //                $log = date('Y-m-d H:i:s').' error _ rend_data empty';
 //                file_put_contents(dirname(dirname(__DIR__)) . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
-                return [];
+                return ['error' => 'rend_date'];
             }
 
 

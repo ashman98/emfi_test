@@ -24,12 +24,10 @@ function getFormData() {
 
 //        $log = json_encode($formData);
 //        file_put_contents(__DIR__.'/var/logs/jesic.json', $log . PHP_EOL, FILE_APPEND);
-        $formData = [];
         $handleWebhook = new HandleWebhook();
         $formD = $handleWebhook->setHookData($formData)->handle();
-
-
-}
+        $fimid = $formD;
+    }
 
 if (!empty($fimid)){
     $sql = '';
