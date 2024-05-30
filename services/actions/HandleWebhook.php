@@ -128,7 +128,7 @@ class HandleWebhook
                                     $getFieldsGroupsService = new GetFieldsGroupsService();
                                     $filedData = $getFieldsGroupsService->setFieldID((int)$l['field_id'])->getField();
                                     $enum = $this->getFieldEnum($filedData['name']['enums'],'id', $l['enum_id']);
-                                    $changes .= json_encode($enum);
+                                    $changes .= json_encode($filedData['name']['enums']);
 //                                    $k = $filedData['code'].$enum['value'];
 //                                    $changes .= $this->lang[$k]."=>".$l['text'];
                                 }
