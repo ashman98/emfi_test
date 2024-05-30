@@ -16,7 +16,7 @@ function getFormData() {
         parse_str($rawPostData, $formData);
     }
 
-    print_r( $formData);
+//    print_r( $formData);
     return $formData;
 }
 

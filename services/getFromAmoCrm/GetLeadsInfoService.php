@@ -40,11 +40,6 @@ class GetLeadsInfoService extends AmoCrmConnectAbstract
             curl_close($curl);
 
             $leads = json_decode($response, true);
-
-//            if (!empty($leads)){
-//                $leads = $leads['_embedded']['leads'][0];
-//            }
-
-            return $leads;
+            return $leads??[];
     }
 }
