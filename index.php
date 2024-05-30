@@ -5,22 +5,24 @@ use services\actions\HandleWebhook;
 use services\db\CreateDbTables;
 use services\db\DBconnect;
 
-$method = $_SERVER['REQUEST_METHOD'];
-$formData = getFormData($method);
+$formData = getFormData();
 
-function getFormData($method) {
+function getFormData() {
+    $log = json_encode($_SERVER['REQUEST_METHOD']);
+    file_put_contents(__DIR__.'/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
+
     $rawPostData = file_get_contents('php://input');
     $formData = [];
 
-//    if ($method === 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         parse_str($rawPostData, $formData);
-//    }
+    }
 
     return $formData;
 }
 
 
-    if ($method === 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $log = json_encode($formData);
         file_put_contents(__DIR__.'/var/logs/jesic.json', $log . PHP_EOL, FILE_APPEND);
