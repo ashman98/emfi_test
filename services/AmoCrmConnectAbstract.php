@@ -1,12 +1,16 @@
 <?php
 namespace services;
 
+use PDO;
+use PDOException;
+use services\db\DBconnect;
+
 class AmoCrmConnectAbstract
 {
     private $clientId = 'edefe1b3-baf7-42af-899c-50621eb275b0';
-    private $clientSecret = 'J4K5n6gkyoED4VTWuMIyaUnwOIoDSzjv5sqGsakSzoP9Xm3jwKmHpnWSODDYNA46';
-    private $code = 'def50200c60f1f55019ace7a849ed6027e1ed5f7c50898b18083f62f2e23c131d5f8f1f1899b1ded4834f356a0bf8598527eee67411d0f24b190d55e2159306fd12cb5b0c09de27dc6b735b0f3c20552f54ee4999e0fd00bab18752f5b1c91cea4df6e6a0d33f832b4f6a642f033b1892a6566b0de4fb8ccf02e3908cef18ea6a5c726340c9b2c91c1bce97d47fbb06fc14d1e9463a7611a002fe09e9c3760f6cab8a0996714b1e19e7430e5341638453eb4dd0f76311ad7a690faf330ad7f999197185bad3c7d131c9a28a38db2bfd509b339d5a6612d0c0cdcd4615f4081bfc280fbb44637cd63e49380bd7a747d20684be481cde132e8f441f3d80d8dba95f5a14d7373687daccd68534c34daa173bff39a3c14698956754d9f64df829ca86475fe981b4cd8424f94485278d902a3ede9daeea9b61c68d38c9a83d364ca47869eeb186f75a7449cf47e48e6c31b12d84af73a241a1aa22a422489d40042ecdc52b1bd2317d3fa90b247e98db22ca77b00f7bc9707105d7269e1f5c9f78067428c6594c218354420cb8e8045191f4121c6c13c2e90048fbe107f0d8de86341529f9aeb0eb1fb577a48e86fd680cc5204f16404b044681c7579ad052fcb06a3259bb724c968f47f07013cd04f2398d5004655b4f97470bc6f2c9bc0558002427cf976b87081452402e724e076';
-    
+    private $clientSecret = 'XY5vPveMNOdA6nurraTt8xbIFUoHLTRDUVkq1X9yenktOnPYgZlYMs9rFiXMY2QW';
+    private $code = 'def50200c025323b3abd4ac473282dd3600e11de7ca291cad4775d21f9c54e21c0c208ee22b21ee6380b76f16891f0c7ce9ce99490ea8125d94be412d3cf93e7d0f3ce6efb2a8bc569fafc5466a621c93c76f18e510479423e1ce8f7d7e5bd0cd35ff7081ec3fd269077c8b97f511a3b63bf0ce90f15b23efbe693f7758e28aadeb69500941f1ad077c0b15caf1aaab1c4ed1537fa0e8a6aa6da17405cfd1b7c8d4c9983821c311470a3be01186bf82c2baa10039fa57600d55ad2d4392310a1a51f76ed4f276f278b49c8155d5f0a71e0df27d7aa1fc68e797cc68c43abd09b03b9afffedf5cab9c5faba1ac9f2f4876e1962ee57ea51653415b77bdd91f017cbca4d4e29d39a10984fbd6b4dacc3e86171147ff3c06fb3ba443d91b967eaa6299651dab6bbb1530dc31ca16a7e179b5719d75e67e1afe3f4586e7e44f5530b7211321c4d68136f32bbb030d63ef4358fc1aef353a79129312d307fd9293429ba97e10eaed90de9dd26c9302e736b0e55554c8e47271e05e77a2c357d191ff24854c084e0c894807324f4c8dbaa283a3c9807cdd7f06f0a381bdd4434438daa7720629302a80b62031022c787f18df6cf2ef1cedaf519b0fccb17e37d58ea4c6ab73a11be752f2d73471325dfddc60f943a888e356dbd57d03fb7c41b8b71bd993b3be5682e021bd1d34a2cb0';
+
     private $redirectUri = 'https://pbl.up.railway.app/';
     private $refreshToken = '';
 
@@ -111,14 +115,33 @@ class AmoCrmConnectAbstract
 
     private function saveRefreshToken($token)
     {
-        setcookie('refresh_token', $token, time() + (86400 * 30), "/");
+        $db = new DBconnect;
+        $conn = $db->conn();
+        $conn->beginTransaction();
+        try {
+            $insertToken = $conn->prepare("INSERT INTO tokens (token) VALUES (:token)");
+            $insertToken->execute([':token' => $token]);
+            echo "New token created successfully";
+            $conn->commit();
+        } catch(PDOException $e) {
+            $conn->rollback();
+            echo $sql . "<br>" . $e->getMessage();
+        }
     }
 
     private function loadRefreshToken()
     {
-        if(!isset($_COOKIE['refresh_token'])) {
-            return ($_COOKIE['refresh_token']);
+        $db = new DBconnect;
+        $conn = $db->conn();
+
+        $token = $conn->prepare("SELECT * FROM tokens ORDER BY id DESC" );
+        $token->execute();
+        $tokenAssoc = $token->fetchAll(PDO::FETCH_ASSOC);
+
+        if(isset($tokenAssoc[0])){
+            return $tokenAssoc[0]['token'];
         }
-        return  '';
+
+        return '';
     }
 }
