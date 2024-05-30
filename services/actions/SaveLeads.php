@@ -40,7 +40,6 @@ class SaveLeads
 
         $leads = $selectLeads->fetchAll(PDO::FETCH_ASSOC);
 
-
         if (!empty($leads)){
             $this->generateRendData($leads[0]);
         }
@@ -70,21 +69,22 @@ class SaveLeads
                 ':created_at' => date('Y-m-d H:i:s', $this->data['created_at']),
                 ':updated_at' => date('Y-m-d H:i:s', $this->data['updated_at']),
             ));
-            $lastInsertLeadsId = $this->pdo->lastInsertId();
+//            $lastInsertLeadsId = $this->pdo->lastInsertId();
 
-            if (!empty($this->data['_embedded']['tags'])){
-                foreach ($this->data['_embedded']['tags'] as $tag){
-                            $insertTags = $this->pdo->prepare("
-                        INSERT INTO tags (external_id, name, leads_id) 
-                        VALUES (:external_id, :name, :leads_id)
-                    ");
-                    $insertTags->execute(array(
-                        ':external_id' => $tag['id'],
-                        ':name' => $tag['name'],
-                        ':leads_id' =>  (int)$lastInsertLeadsId,
-                    ));
-                }
-            }
+//            if (!empty($this->data['_embedded']['tags'])){
+//                foreach ($this->data['_embedded']['tags'] as $tag){
+//                            $insertTags = $this->pdo->prepare("
+//                        INSERT INTO tags (external_id, name, leads_id,color)
+//                        VALUES (:external_id, :name, :leads_id,:color)
+//                    ");
+//                    $insertTags->execute(array(
+//                        ':external_id' => $tag['id'],
+//                        ':name' => $tag['name'],
+//                        ':leads_id' =>  (int)$lastInsertLeadsId,
+//                        ':color' => 'color'
+//                    ));
+//                }
+//            }
 
 
             $this->pdo->commit();
@@ -98,34 +98,36 @@ class SaveLeads
     private function generateRendData($leads)
     {
         $rendDataKeys = [
-            'name',
-            'price',
-            'responsible_user_name',
-            'created_at',
-            'updated_at'
+            'name' => "Название",
+            'price' => "Бюджет",
+            'responsible_user_name' => 'Ответственный',
+            'created_at' => 'Время добавления карточки',
+            'updated_at' => 'Время изменения карточки'
         ];
 
         if (!empty($this->data['responsible_user_id'])){
             $getUsers = new GetUsersInfoService();
             $responsibleUser = $getUsers->setUserID((int)$this->data['responsible_user_id'])->getUserInfo();
-            $this->rendData['responsible_user_name'] = ['val' => $responsibleUser['name'],'is_changed' => false];
+            $this->rendData['responsible_user_name'] = ['val' => $responsibleUser['name'],'is_changed' => 0, 'rus' => $rendDataKeys['responsible_user_name']];
         }
 
         foreach ($this->data as $key => $value){
             if(array_key_exists($key, $rendDataKeys)){
+                echo '<br>'.$key.'<br>';
              if (!empty($leads)){
                     if (array_key_exists($key, $leads) && $leads[$key] != $value){
                         if ($key === 'responsible_user_id'){
-                            $this->rendData['responsible_user_name']['is_changed'] = true;
+                            $this->rendData['responsible_user_name']['is_changed'] = 1;
                             continue;
                         }
 
-                        $this->rendData[$key] = ['val' => $value,'is_changed' => true];
+                        $this->rendData[$key] = ['val' => $value, 'is_changed' => 1, 'rus' => $rendDataKeys[$key]];
                         continue;
                     }
                 }
 
-                $this->rendData[$key] = ['val' => $value,'is_changed' => false];
+
+                $this->rendData[$key] = ['val' => $value,'is_changed' => 0, 'rus' => $rendDataKeys[$key]];
             }
         }
     }

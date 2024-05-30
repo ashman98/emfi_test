@@ -39,6 +39,6 @@ class GetUsersInfoService extends AmoCrmConnectAbstract
             curl_close($curl);
 
             $user = json_decode($response, true);
-            return $user['_embedded']['users'][0];
+            return $user;
     }
 }

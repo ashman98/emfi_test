@@ -44,16 +44,16 @@ class HandleWebhook
                     $actionData['entity_id'] = (int)$this->hookData['leads']['add'][0]['id'];
                     $actionData['action_type'] = 'add';
                 }elseif (isset($this->hookData['leads']['update'])){
-                    $actionData['entity_id'] = (int)293003;
+                    $actionData['entity_id'] = (int)$this->hookData['leads']['update'][0]['id'];
                     $actionData['action_type'] = 'update';
                 }
 
-
+//                $actionData['entity_id'] = 293003;
 
                 if (!empty($actionData['entity_id'])){
                     $getLeadsInfoService = new GetLeadsInfoService();
                     $leadsInfo = $getLeadsInfoService->setLeadsID($actionData['entity_id'])->getLeadsInfo();
-                    
+
                     if (!empty($leadsInfo)){
                         $saveLeads = new SaveLeads();
                         $saveLeads->setData($leadsInfo)->addLeads();
@@ -79,26 +79,28 @@ class HandleWebhook
 
             if (empty($actionData['rend_data'])) {
                 return ['error' => 'rend_date'];
-            }else{
-                return $actionData['rend_data'];
             }
+
+            print_r($actionData['rend_data']);
 
 
             if ($actionData['action_type'] === 'add') {
-                $note_text .= ": " . $actionData['rend_data']['name']
-                    . "\nОтветственный: " . $actionData['rend_data']['responsible_user_name']
-                    . "\nВремя добавления карточки : " . date('Y-m-d H:i:s', $actionData['rend_data']['created_at']);
+                $note_text .= ": " . $actionData['rend_data']['name']['val']
+                    . "\n".$actionData['rend_data']['responsible_user_name']['rus'].": " . $actionData['rend_data']['responsible_user_name']['val']
+                    . "\n".$actionData['rend_data']['created_at']['rus'].": " . date('Y-m-d H:i:s', $actionData['rend_data']['created_at']['val']);
             }
-//            elseif ($actionData['action_type'] == 'update') {
-//    //                return ['name' => $this->hookData];
-//    //                $changes = '';
-//    //                foreach ($this->hookData['changes'] as $field => $newValue) {
-//    //                    $changes .= "$field: $newValue\n";
-//    //                }
-//                $note_text .= ": "
-//                    . $actionData['rend_data']['name']. "\nChanges:\n" . ' $changes '
-//                    . "\nВремя изменения карточки: " . date('Y-m-d H:i:s', $actionData['rend_data']['update_at']);
-//            }
+            else{
+                    $changes = '';
+                    foreach ($actionData['rend_data'] as $field => $newValue) {
+                        if(boolval($newValue['is_changed'])){
+                            $changes .= $newValue['rus'].": ".$newValue['val']."\n";
+                        }
+                    }
+                $note_text .= ": "
+                    . $actionData['rend_data']['name']
+                    . "\nИзмененные поля:\n" . $changes
+                    . "\n".$actionData['rend_data']['update_at']['rus'].": " . date('Y-m-d H:i:s', $actionData['rend_data']['update_at']);
+            }
 
 
             $addNoteToCard = new AddNoteToCard;
