@@ -4,8 +4,8 @@ namespace services;
 class AmoCrmConnectAbstract
 {
     private $clientId = 'edefe1b3-baf7-42af-899c-50621eb275b0';
-    private $clientSecret = 'SH3LV3iA5CGI6hjmHH0ySW5SWQyH0GrwzqJPPofIxclAse61ljzd9oIbxq1h8EPU';
-    private $code = 'def502001ce58801443d7932519299d9d32e776403019da79864e2f23f970807faee71444cc623711eda92073755eba4483e549b9d4a9d565ab86458f456fb45ce99a971b4eb90b32ee63c5033ef29b4c571fdcba7cd148ef5a6dfd9b2a0e0a28c0206b6c9ef10142721fde35e418e59d769ccaf222767869c63bb023f22681074b8114027729a3d8b2be6b6007df254007560dd4934b2f6f8f97cd0bfb9992427e4e749842efb281b7f3fc571ca81d5e19a1d5da0db5939b223c1dff991e422d57cd18f9c8275f42240f9a39eb097004542c794c174556ba8edc4d878149ad9657aeabb9460a0e708a9b2861567b3c97bbcd5aa25850fdfd96ca0ca522b241092f4667e4b231d3e7a60e11115db348898e5f0a74e8e8e986b9fb1d1b2a1faba709896ba6ee0107d985cdb63dd63dac9d8e511c457c7527877149803e0fb21ed7cda06d9cf9ed7ed08ed2edd582fb255770b0ed7b9f398054cc018ca09c7b438b51722fc4582bb2a5becd41b667c1d8d2c2580d55031d15f8455d96a5abef6ba1439654197504f9f1cb8cdafcf54e6a20040ae4fb71d2f9c25fd062cc0e8193c938dc63cccce3b8027015fb00e234bfa01c6474b6e5a4fb819e7c4af5269ee2ddcb72da9e8dd21d6f1b99d6cb0761d2bf4ab5a87bbe9b8215f186c73246c507b60eb03cd84eda6f017660f';
+    private $clientSecret = 'x5bALOGtncV0JrBqDhFd8QUrKLYMkawhXsfN13eYcWpMWmrySCk5VbnZbEfXm8lM';
+    private $code = 'def5020047fd6dd2a55aa5452636ac605013044b97a64620fb0e0f0cfd9a4eb174892ea24cd2958a77899b215bb0dbb247f706ae48e136b326f5972054211a28c082a2f69b1c37eb5c2a3bc07239b2fbebe1313ad0043531bc7b9f9dad849935cc73bd6b02b7c6ff2587330744e3ba952bdf3dd57568900b05f52c1ebcb885fc664171a9cc8f0a78dc4fd4b57274b841f4ba331cfb4b872c17c7042919c8d4b3c0c362e21485df422cae7484a0e87dab740c24dcd0d3e054138f53697ffeb55891bc2f12affc59f5d216e5334627957bf811e65cbbd34e91de392c8254a7115fa3ee19ec1d14de8893ae0f0ca02a2ec9d1792b40bf8f5b8a2e586c908768388f0b3c2f9552d296ab7c338bead9cd09e99597128336288e7723e32f41a6c219782cfee8421b495948d366afa52e6ed73ac0c35d621c186a997b587d5ecefbe46d775e6e3d65bc224bd15483c050e30b92927def365e375589c6c9ff681a4412b331df6b86ba13353b6a83980058b44367842908d7a1f74f66a23557535b38c4ea51da2d5baadcec37782d7ba5177044a895569275bb0faf729ae7d2b71f4686976561b9cd0a7b10d626778bc27922685a92eb1f14fd87584af5c699331ba9bcc8ddb20f0be1e3ac1fc7bf77e06da6e72b95246d796ab3032ea5990cdde6bbfd10910e09231f2fce0fa22c20';
     
     private $redirectUri = 'https://pbl.up.railway.app';
     private $refreshToken = '';
@@ -100,8 +100,10 @@ class AmoCrmConnectAbstract
         if (isset($response['access_token'])) {
             $this->accessToken = $response['access_token'];
             $this->refreshToken = $response['refresh_token'];
+            echo 'Authorization success';
         } else {
-            die('Ошибка: Invalid response from authorization server');
+            echo('Ошибка: Invalid response from authorization server');
+            die();
         }
     }
 }
