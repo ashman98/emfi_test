@@ -134,8 +134,8 @@ class HandleWebhook
             $addNoteToCard
                 ->setEntityType($actionData['entity_type'])
                 ->setEntityID($actionData['entity_id'])
-                ->setNoteText($note_text);
-//                ->addNoteToCard();
+                ->setNoteText($note_text)
+                ->addNoteToCard();
         }
 
         return [];
