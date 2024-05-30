@@ -119,12 +119,11 @@ class HandleWebhook
                         foreach ($events['_embedded']['events'][0]['value_after'] as $key => $evernt) {
                             print_r($evernt);
                             foreach ($evernt as $l){
-                                if($actionData['action_type'] === 'add' && $actionData['entity_type'] === 'contact'){
+                                if($actionData['entity_type'] !== 'contact'){
                                     foreach ($l as $k => $v){
                                             $changes .= $this->lang[$k]."=>".$v." ";
                                         }
                                 }else{
-
                                     $getFieldsGroupsService = new GetFieldsGroupsService();
                                     $filedData = $getFieldsGroupsService->setFieldID((int)$l['field_id'])->getField();
                                     $enum = $this->getFieldEnum($filedData['enums'],'id', $l['enum_id']);
