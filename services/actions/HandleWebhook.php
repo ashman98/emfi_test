@@ -60,13 +60,14 @@ class HandleWebhook
                             'filter[created_at][from]' => $leadsInfo['updated_at'],
                             'filter[type]' => [
                                 'lead_added',
-                                'company_added',
+                                'sale_field_changed',
+                                'contact_added',
                                 'name_field_changed',
                                 'custom_field_value_changed',
                                 'entity_responsible_changed'
                             ]
                         ])->getEvents();
-//                    print_r($events);
+//                    print_r($leadsInfo);
 
                     $getUsers = new GetUsersInfoService();
                     $responsibleUser = $getUsers->setUserID((int)$leadsInfo['responsible_user_id'])->getUserInfo();
@@ -104,14 +105,14 @@ class HandleWebhook
                     . "\nВремя добавления карточки: " . date('Y-m-d H:i:s', $leadsInfo['created_at']);
             } else{
                     $changes = '';
-//                print_r($events['_embedded']['events']);
+                print_r($events);
                     if (isset($events['_embedded']['events'][0])){
 //                        print_r($events['_embedded']['events']);
 //                        print_r($events['_embedded']['events'][0]);
                         foreach ($events['_embedded']['events'][0]['value_after'] as $key => $evernt) {
-//                            print_r($evernt);
+                            print_r($evernt);
                             foreach ($evernt as $l){
-                                print_r($l);
+//                                print_r($l);
                                 foreach ($l as $k => $v){
 //                                    if ($v === 'name'){
                                         $changes .= $k."=>".$v." ";
@@ -133,8 +134,8 @@ class HandleWebhook
             $addNoteToCard
                 ->setEntityType($actionData['entity_type'])
                 ->setEntityID($actionData['entity_id'])
-                ->setNoteText($note_text)
-                ->addNoteToCard();
+                ->setNoteText($note_text);
+//                ->addNoteToCard();
         }
 
         return [];
