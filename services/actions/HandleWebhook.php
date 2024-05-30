@@ -16,7 +16,17 @@ class HandleWebhook
 
     private $lang = [
         'name' => 'Название',
-        'sale' => 'Бюджет'
+        'sale' => 'Бюджет',
+        'PHONE_WORK' => '',
+        'PHONE_WORKDD' => '',
+        'PHONE_MOB' => '',
+        'PHONE_FAX' => '',
+        "PHONE_HOME" => '',
+        "PHONE_OTHER" => '',
+        'EMAIL_WORK' => '',
+        "EMAIL_PRIV" => '',
+        "EMAIL_OTHER" => '',
+
     ];
 
     private $hookData = [];
@@ -112,12 +122,14 @@ class HandleWebhook
                             foreach ($evernt as $l){
                                 if($actionData['action_type'] === 'add' && $actionData['entity_type'] === 'contact'){
                                     foreach ($l as $k => $v){
-                                            $changes .= $k."=>".$v." ";
+                                            $changes .= $this->lang[$k]."=>".$v." ";
                                         }
                                 }else{
                                     $getFieldsGroupsService = new GetFieldsGroupsService();
                                     $filedData = $getFieldsGroupsService->setFieldID((int)$l['field_id'])->getField();
-                                    $changes .= json_encode($filedData);
+                                    $enum = $this->getFieldEnum($filedData['name']['enums'],'id', $l['enum_id']);
+                                    $k = $filedData['code'].$enum['value'];
+                                    $changes .= $this->lang[$k]."=>".$l['text'];
                                 }
                             }
 
@@ -139,6 +151,15 @@ class HandleWebhook
         }
 
         return;
+    }
+
+    private function getFieldEnum($array, $key, $value) {
+        foreach ($array as $subArray) {
+            if (isset($subArray[$key]) && $subArray[$key] == $value) {
+                return $subArray;
+            }
+        }
+        return null;
     }
 
 
