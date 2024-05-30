@@ -9,9 +9,9 @@ class AmoCrmConnectAbstract
 {
     private $clientId = 'edefe1b3-baf7-42af-899c-50621eb275b0';
     private $clientSecret = 'XY5vPveMNOdA6nurraTt8xbIFUoHLTRDUVkq1X9yenktOnPYgZlYMs9rFiXMY2QW';
-    private $code = 'def50200c025323b3abd4ac473282dd3600e11de7ca291cad4775d21f9c54e21c0c208ee22b21ee6380b76f16891f0c7ce9ce99490ea8125d94be412d3cf93e7d0f3ce6efb2a8bc569fafc5466a621c93c76f18e510479423e1ce8f7d7e5bd0cd35ff7081ec3fd269077c8b97f511a3b63bf0ce90f15b23efbe693f7758e28aadeb69500941f1ad077c0b15caf1aaab1c4ed1537fa0e8a6aa6da17405cfd1b7c8d4c9983821c311470a3be01186bf82c2baa10039fa57600d55ad2d4392310a1a51f76ed4f276f278b49c8155d5f0a71e0df27d7aa1fc68e797cc68c43abd09b03b9afffedf5cab9c5faba1ac9f2f4876e1962ee57ea51653415b77bdd91f017cbca4d4e29d39a10984fbd6b4dacc3e86171147ff3c06fb3ba443d91b967eaa6299651dab6bbb1530dc31ca16a7e179b5719d75e67e1afe3f4586e7e44f5530b7211321c4d68136f32bbb030d63ef4358fc1aef353a79129312d307fd9293429ba97e10eaed90de9dd26c9302e736b0e55554c8e47271e05e77a2c357d191ff24854c084e0c894807324f4c8dbaa283a3c9807cdd7f06f0a381bdd4434438daa7720629302a80b62031022c787f18df6cf2ef1cedaf519b0fccb17e37d58ea4c6ab73a11be752f2d73471325dfddc60f943a888e356dbd57d03fb7c41b8b71bd993b3be5682e021bd1d34a2cb0';
+    private $code = 'def502005bdad70b7bca26d0783152d6baf022cf660711ebc5e5b8294c25407188306c79f2093d541d5bbb615296ef22229f96004b30fddfd9d4f4174865238b022333d76ea147a2baef093cdd86a7ed8de2238fa6617e61d0f0d64b56b4d16eb9f846166ec7a99844d13a8ee6ddc01c1c4ec3f40e0bff76295bcca7db9728bc4deba72238622b44a2f309800d0298afa67dbea2cfd6af96322c43b7bf992263b1201b4d4f37af2b5fb309a224ffe2cea9f02d495ec3a6c620aef1b0d60907bb0c011de04a07596e5cf7a96988086c47845d377c99c3be00a48288195862bab90e16e98506d382176deedfca76f91217cdc1200a8216df747dcc2a3a3f92fe94bdf735518f105f25803a50c9c92fdc2bf90dc53b88d3e2b9e35a9251194bab228adc849c2812349a71bba1655a54356e7ad83ac107e883fd4fbea1d33ef7274ed508c6f9fd0ec4f78e1436d30e86dd6f280e69c15272cfd521a7fa1bb97e1a66e32589d14cfbe7e91869f938dc396d1bfb5d349e7aa17e651e1598d72299443eca72da261cba0a97bebc3a9a600fa3612335dfaf8045b9a716cffc6ae099fb3cae133552ac2566a8c79feea30f1afc281f9ec84ad56eb7e26eba20942071dfc4e7483b3840f3d0563b58590529bdefb57c307444c925f839885d6afe4d458ab25e8a455c9dad3f83ba6550';
 
-    private $redirectUri = 'https://pbl.up.railway.app/';
+    private $redirectUri = 'https://pbl.up.railway.app';
     private $refreshToken = '';
 
     protected $subdomain = 'emfitestmailru';
@@ -19,7 +19,7 @@ class AmoCrmConnectAbstract
 
     public function __construct()
     {
-        $this->refreshToken = $this->loadRefreshToken();
+         $this->loadRefreshToken();
 
         if (empty($this->refreshToken)) {
             $this->authorize();
@@ -139,9 +139,7 @@ class AmoCrmConnectAbstract
         $tokenAssoc = $token->fetchAll(PDO::FETCH_ASSOC);
 
         if(isset($tokenAssoc[0])){
-            return $tokenAssoc[0]['token'];
+            $this->refreshToken = $tokenAssoc[0]['token'];
         }
-
-        return '';
     }
 }
