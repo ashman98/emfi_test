@@ -83,13 +83,13 @@ class AmoCrmConnectAbstract
             503 => 'Service unavailable',
         ];
 
-        try {
-            if ($code < 200 || $code > 204) {
-                throw new \Exception(isset($errors[$code]) ? $errors[$code] : 'Undefined error', $code);
-            }
-        } catch (\Exception $e) {
-            die('Ошибка: ' . $e->getMessage() . PHP_EOL . 'Код ошибки: ' . $e->getCode());
-        }
+//        try {
+//            if ($code < 200 || $code > 204) {
+//                throw new \Exception(isset($errors[$code]) ? $errors[$code] : 'Undefined error', $code);
+//            }
+//        } catch (\Exception $e) {
+//            die('Ошибка: ' . $e->getMessage() . PHP_EOL . 'Код ошибки: ' . $e->getCode());
+//        }
 
         return json_decode($out, true);
     }

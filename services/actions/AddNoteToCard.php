@@ -9,6 +9,11 @@ class AddNoteToCard extends AmoCrmConnectAbstract
     private $entityID;
     private $noteText;
 
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     /**
      * @param mixed $entityType
      * @return AddNoteToCard

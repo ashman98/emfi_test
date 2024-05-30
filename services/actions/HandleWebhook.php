@@ -1,18 +1,20 @@
 <?php
 namespace services\actions;
 
-use services\actions\AddNoteToCard;
-use services\actions\SaveLeads;
-use services\AmoCrmAuthTrite;
+use services\AmoCrmConnectAbstract;
 use services\getFromAmoCrm\GetContactInfoService;
 use services\getFromAmoCrm\GetEventsService;
 use services\getFromAmoCrm\GetFieldsGroupsService;
 use services\getFromAmoCrm\GetLeadsInfoService;
 use services\getFromAmoCrm\GetUsersInfoService;
 
-class HandleWebhook
+class HandleWebhook extends AmoCrmConnectAbstract
 {
-    use AmoCrmAuthTrite;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     private $lang = [
         'name' => 'Название',
