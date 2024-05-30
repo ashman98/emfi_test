@@ -8,8 +8,9 @@ use services\db\DBconnect;
 class AmoCrmConnectAbstract
 {
     private $clientId = 'edefe1b3-baf7-42af-899c-50621eb275b0';
-    private $clientSecret = '4EzbMwzAE0Fwg0RuRL0r2Bocfu72PCYeECmGd8sSFHvJq36gyx32y1j5ZVRxq7z7';
-    private $code = 'def502007d4bff016ea7273343a00d2dc536a52455c21324f82933f765be56703aeb02eeb5e395b45bbbeeaab9a2e407dd00364423dfd453d6234382a0cb8e6caa0e9f0a0a45f18f9e5fb0f8cfd92a74d851625790dcc85f67168e2f7d062835fa8b436cac6bf05c19d662dacde6a8a4e18b7e892081d327377ff0554c6b460a1468fecaaaf2cedbf73569889733b476d4b81cc6188ac5d71b1cf6697240a4d6119a482bec8cd8ad00f74331a7191180241333fcb69b02dd48c6de72ea9788973d7bcdd7f859f694daaf9eb44f698d0682ff5bf67afa3776a07db28302e04b73a25fe37ff98f99977e80f0efa175ff85fd72debb410e5b9852ff34a8a69cbd3165edb11ad95bfba2b678e8d7db29215945666d33eedaa6986922837ba50e54577b13c9b46d1f4517d98be159a75b54ff763be887e5cb45eb28e874b25ab91dd0af8e171c24256317966f70130f64fad9d96af8154726121498829d818331f989819e8610756cc22899e9ca5a575e353fce0de58e4613231ea4154554195369067efe38feb00df1b1a9baef80cb604f24767f0bc9d86cb3e8ecea9a5f9b331614e0be8d14d249d526d18884ee25dae4d9e7a32d5092def244cdb03c362bc67349d3f4c8fe038321a9ae63ed1ba2b4e3d782f62bef90370037cb028b1e5d89f48b6daef8293cc67a15c71aa6';
+    private $clientSecret = 'Bh4L837MlhP2OjmqblTdJjyNWzpoRcFkzyq69XcrI71TAEUdnGrcchH8NLyga1G0';
+    private $code ='def5020001fdb74b2afe7aa72f27d30be546f15332d42b913fb47b956c86b8ba2608d19d8e8e711019578671be059bcd24fb12635f2925af51c1c2ac3d9e6c719e0410949373cfa7b10aa1d4896de5321439aac18510d6829bfb1022ccb64d10b3eb308532553f07d1b69e0493e27a28f0b7eaa1dcd36830889f5690c1b1c8cf49843e0c53b80d7f5fbbaa94751bfead4f570f55fd0b6b1bcb26cf0c1faf95cbf23f9bbdb6bde8bffc0a5542fa7ecb83ee8cc7b2ba3788f5dfc002447d3043012dc6026c38e2d2fa27feb7a8aef3df1146d5972607dee753096ad6e1f606e393244dc3c05c5bab0e075e24799b9a8e4cc519954b7750a0b783719825dc1b3363c329bd116a85e2bc02e6b388f7b5133abbb5d7f7f2a73ba67d1dad76e198cb88e6a65b3e384497677dfd742af97699ef3365e1f87fe8cf3a5feb7e4f55a75f7d28dc639b644513933c8b6cdb3226830081ed3047728b441e591341db585e78dae34b6521947964cb55066e470045399fb2c3f5be3bde1843679c0749d4115680be1015a11b5b705acb9006ef99df91b36681633732aa57b055ca4217da9e900d264af1b0ae21a119e5791bf047ecacdc92e7fd44d294852e0be500d9606d74186105514a1d18423f627baf17ba67f59f482730edcd9c9f64b89aedb9e4762c266615bd90e6fb0811258149';
+
     private $redirectUri = 'https://pbl.up.railway.app';
     private $refreshToken = '';
 
@@ -88,19 +89,13 @@ class AmoCrmConnectAbstract
             503 => 'Service unavailable',
         ];
 
-        if ($data['grant_type'] === 'refresh_token'){
+        try {
             if ($code < 200 || $code > 204) {
-                $this->authorize();
+                echo ($errors[$code] ?? 'Undefined error' . $code);
             }
+        } catch (\Exception $e) {
+            die('Ошибка: ' . $e->getMessage() . PHP_EOL . 'Код ошибки: ' . $e->getCode());
         }
-
-//        try {
-//            if ($code < 200 || $code > 204) {
-//                throw new \Exception(isset($errors[$code]) ? $errors[$code] : 'Undefined error', $code);
-//            }
-//        } catch (\Exception $e) {
-//            die('Ошибка: ' . $e->getMessage() . PHP_EOL . 'Код ошибки: ' . $e->getCode());
-//        }
 
         return json_decode($out, true);
     }
