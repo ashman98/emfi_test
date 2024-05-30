@@ -49,6 +49,7 @@ class HandleWebhook
                 }
 
 //                $actionData['entity_id'] = 293003;
+                return $actionData;
 
                 if (!empty($actionData['entity_id'])){
                     $getLeadsInfoService = new GetLeadsInfoService();
