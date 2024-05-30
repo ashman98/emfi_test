@@ -36,27 +36,31 @@ class HandleWebhook
 
 //            $log = json_encode($this->hookData);
 //            file_put_contents(__DIR__ . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
-            return $this->hookData;
             if (isset($this->hookData['leads'])){
                 $actionData['entity_type'] = 'leads';
                 $note_text .= 'Название сделки';
 
                 if (isset($this->hookData['leads']['add'])){
-                    $actionData['entity_id'] = $this->hookData['leads']['add'][0]['id'];
+                    $actionData['entity_id'] = (int)$this->hookData['leads']['add'][0]['id'];
                     $actionData['action_type'] = 'add';
                 }elseif (isset($this->hookData['leads']['update'])){
-                    $actionData['entity_id'] = $this->hookData['leads']['update'][0]['id'];
+                    $actionData['entity_id'] = (int)$this->hookData['leads']['update'][0]['id'];
                     $actionData['action_type'] = 'update';
                 }
 
-                $getLeadsInfoService = new GetLeadsInfoService();
-                $leadsInfo = $getLeadsInfoService->setLeadsID((int)$actionData['entity_id'])->getLeadsInfo();
+                if (!empty($actionData['entity_id'])){
+                    $getLeadsInfoService = new GetLeadsInfoService();
+                    $leadsInfo = $getLeadsInfoService->setLeadsID($actionData['entity_id'])->getLeadsInfo();
 
-                if (!empty($leadsInfo)){
-                    $saveLeads = new SaveLeads();
-                    $saveLeads->setData($leadsInfo)->addLeads();
-                    $actionData['rend_data'] = $saveLeads->getChangesValues();
+                    if (!empty($leadsInfo)){
+                        $saveLeads = new SaveLeads();
+                        $saveLeads->setData($leadsInfo)->addLeads();
+                        $actionData['rend_data'] = $saveLeads->getRendData();
+                    }
                 }
+
+
+
             }
 //            elseif (isset($this->hookData['contacts'])){
 //                $actionData['entity_type'] = 'contacts';
@@ -73,6 +77,8 @@ class HandleWebhook
 
             if (empty($actionData['rend_data'])) {
                 return ['error' => 'rend_date'];
+            }else{
+                return $actionData['rend_data'];
             }
 
 

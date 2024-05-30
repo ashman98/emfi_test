@@ -10,7 +10,7 @@ class SaveLeads
 {
     private $pdo = null;
     private $data = [];
-    private $changesValues = [];
+    private $rendData = [];
 
 
     public function __construct()
@@ -25,9 +25,9 @@ class SaveLeads
         return $this;
     }
 
-    public function getChangesValues(): array
+    public function getRendData(): array
     {
-        return $this->changesValues;
+        return $this->rendData;
     }
 
     public function addLeads()
@@ -39,8 +39,10 @@ class SaveLeads
         $selectLeads->execute(array(':external_id' => (int)$this->data['id']));
 
         $leads = $selectLeads->fetchAll(PDO::FETCH_ASSOC);
+
+
         if (!empty($leads)){
-            $this->detectChanges($leads[0]);
+            $this->generateRendData($leads[0]);
         }
 
         try {
@@ -93,7 +95,7 @@ class SaveLeads
         }
     }
 
-    private function detectChanges($leads)
+    private function generateRendData($leads)
     {
         $rendDataKeys = [
             'name',
@@ -103,19 +105,28 @@ class SaveLeads
             'updated_at'
         ];
 
-        foreach ($this->data as $key => $value){
-            if (isset($leads[$key]) && array_key_exists($key, $rendDataKeys) && $leads[$key] != $value){
-//                $log = date('Y-m-d H:i:s').' '.$leads[$key] . ' !== ' . $value;
-//                file_put_contents(dirname(dirname(__DIR__)) . '/var/logs/log.txt', $log . PHP_EOL, FILE_APPEND);
+        if (!empty($this->data['responsible_user_id'])){
+            $getUsers = new GetUsersInfoService();
+            $responsibleUser = $getUsers->setUserID((int)$this->data['responsible_user_id'])->getUserInfo();
+            $this->rendData['responsible_user_name'] = ['val' => $responsibleUser['name'],'is_changed' => false];
+        }
 
-                if ($leads['responsible_user_id'] === $value['responsible_user_id'] && $key === 'responsible_user_id'){
-                    $getUsers = new GetUsersInfoService();
-                    $responsibleUser = $getUsers->setUserID($value['responsible_user_id'])->getUserInfo();
-                    $this->changesValues['responsible_user_name'] = $responsibleUser['name'];
+        foreach ($this->data as $key => $value){
+            if(array_key_exists($key, $rendDataKeys)){
+             if (!empty($leads)){
+                    if (array_key_exists($key, $leads) && $leads[$key] != $value){
+                        if ($key === 'responsible_user_id'){
+                            $this->rendData['responsible_user_name']['is_changed'] = true;
+                            continue;
+                        }
+
+                        $this->rendData[$key] = ['val' => $value,'is_changed' => true];
+                        continue;
+                    }
                 }
 
-                $this->changesValues[$key] = $value;
-             }
+                $this->rendData[$key] = ['val' => $value,'is_changed' => false];
+            }
         }
     }
 
