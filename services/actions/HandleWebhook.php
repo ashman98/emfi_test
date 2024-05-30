@@ -39,21 +39,22 @@ class HandleWebhook
             if (isset($this->hookData['leads'])){
                 $actionData['entity_type'] = 'leads';
                 $note_text .= 'Название сделки';
+//                return $this->hookData;
 
-                if (isset($this->hookData['leads']['add'])){
+                if (array_key_exists('add',$this->hookData['leads'])){
                     $actionData['entity_id'] = (int)$this->hookData['leads']['add'][0]['id'];
                     $actionData['action_type'] = 'add';
-                }elseif (isset($this->hookData['leads']['update'])){
+                }else{
                     $actionData['entity_id'] = (int)$this->hookData['leads']['update'][0]['id'];
                     $actionData['action_type'] = 'update';
                 }
+//
+//                $actionData['entity_id'] = 293515;
 
-//                $actionData['entity_id'] = 293003;
-                return $actionData;
 
                 if (!empty($actionData['entity_id'])){
                     $getLeadsInfoService = new GetLeadsInfoService();
-                    $leadsInfo = $getLeadsInfoService->setLeadsID($actionData['entity_id'])->getLeadsInfo();
+                    $leadsInfo = $getLeadsInfoService->setLeadsID((int)$actionData['entity_id'])->getLeadsInfo();
 
                     if (!empty($leadsInfo)){
                         $saveLeads = new SaveLeads();
@@ -61,9 +62,6 @@ class HandleWebhook
                         $actionData['rend_data'] = $saveLeads->getRendData();
                     }
                 }
-
-
-
             }
 //            elseif (isset($this->hookData['contacts'])){
 //                $actionData['entity_type'] = 'contacts';

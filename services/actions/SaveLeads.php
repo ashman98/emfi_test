@@ -32,17 +32,7 @@ class SaveLeads
 
     public function addLeads()
     {
-        $selectLeads = $this->pdo
-            ->prepare("
-                    SELECT * FROM leads WHERE 
-                        external_id = :external_id ORDER BY updated_at DESC" );
-        $selectLeads->execute(array(':external_id' => (int)$this->data['id']));
-
-        $leads = $selectLeads->fetchAll(PDO::FETCH_ASSOC);
-
-        if (!empty($leads)){
-            $this->generateRendData($leads[0]);
-        }
+        $this->generateRendData();
 
         try {
             $this->pdo->beginTransaction();
@@ -52,8 +42,8 @@ class SaveLeads
             );
             $insertLeads->execute(array(
                 ':external_id' =>  (int)$this->data['id'],
-                ':name' => $this->data['name'],
-                ':price' => $this->data['price'],
+                ':name' => (string)$this->data['name'],
+                ':price' => (float)$this->data['price'],
                 ':responsible_user_id' => (int)$this->data['responsible_user_id'],
                 ':group_id' => (int)$this->data['group_id'],
                 ':status_id' => (int)$this->data['status_id'],
@@ -95,8 +85,15 @@ class SaveLeads
         }
     }
 
-    private function generateRendData($leads)
+    private function generateRendData()
     {
+        $selectLeads = $this->pdo
+            ->prepare("
+                    SELECT * FROM leads WHERE 
+                        external_id = :external_id ORDER BY updated_at DESC" );
+        $selectLeads->execute(array(':external_id' => (int)$this->data['id']));
+        $leads = $selectLeads->fetchAll(PDO::FETCH_ASSOC);
+
         $rendDataKeys = [
             'name' => "Название",
             'price' => "Бюджет",
@@ -114,8 +111,8 @@ class SaveLeads
         foreach ($this->data as $key => $value){
             if(array_key_exists($key, $rendDataKeys)){
                 echo '<br>'.$key.'<br>';
-             if (!empty($leads)){
-                    if (array_key_exists($key, $leads) && $leads[$key] != $value){
+             if (!empty($leads[0])){
+                    if (array_key_exists($key, $leads[0]) && $leads[0][$key] != $value){
                         if ($key === 'responsible_user_id'){
                             $this->rendData['responsible_user_name']['is_changed'] = 1;
                             continue;
